@@ -1,0 +1,8 @@
+streamlit>=1.31
+numpy>=1.26
+pandas>=2.1
+plotly>=5.18
+deap>=1.4.1
+scikit-fuzzy>=0.4.2
+pytest>=8.0
+openpyxl>=3.1
