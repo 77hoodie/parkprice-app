@@ -1,4 +1,4 @@
-from src.fuzzy_model import ParkingInputs, RULES, recommend_price
+from app.services.fuzzy_model import ParkingInputs, RULES, recommend_price
 
 
 def test_recommend_price_returns_expected_fields():
@@ -14,9 +14,10 @@ def test_recommend_price_returns_expected_fields():
 
     assert "recommended_rate" in result
     assert "multiplier" in result
+    assert "activations" in result
     assert result["recommended_rate"] > 0
     assert 0.7 <= result["multiplier"] <= 1.8
 
 
-def test_rule_count_stays_visible():
-    assert len(RULES) >= 12
+def test_rule_count_for_expanded_team():
+    assert len(RULES) >= 18

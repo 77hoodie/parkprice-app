@@ -1,0 +1,13 @@
+scenario,description,base_rate,occupancy,demand,event_level,avg_stay_minutes,expected_behavior
+weak_day,Dia fraco com baixa demanda,8.0,20,2.0,0.0,45,desconto ou normal baixo
+common_day,Dia comum sem evento,8.0,55,5.0,1.0,90,normal
+moderate_peak,Pico moderado com demanda alta,8.0,75,7.5,4.5,100,moderado
+early_full,Quase lotado com evento forte,8.0,90,8.5,8.0,150,alto ou critico
+event_with_vacancies,Evento forte mas ainda com vagas,8.0,35,8.0,9.0,55,normal ou moderado
+operational_conflict,Ocupacao alta mas demanda baixa,8.0,85,2.5,0.0,160,moderado evitando exagero
+critical_capacity,Capacidade critica persistente,8.0,97,9.5,8.5,190,critico
+low_turnover,Alta permanencia media com demanda moderada,8.0,68,5.8,2.0,210,moderado com alerta de rotatividade
+hospital_peak,Pico em hospital com permanencia longa,7.0,88,7.0,5.0,180,alto controlado
+university_event,Evento universitario com demanda alta,6.0,72,8.0,7.0,80,moderado ou alto
+mall_weekend,Shopping fim de semana,10.0,82,8.5,6.0,130,alto
+empty_lot,Estacionamento quase vazio,8.0,12,1.5,0.0,35,desconto

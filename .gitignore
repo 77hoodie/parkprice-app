@@ -1,10 +1,27 @@
+# Python
 .venv/
 __pycache__/
 *.pyc
 .pytest_cache/
-.streamlit/
-.DS_Store
+.coverage
+
+# Frontend
+node_modules/
+dist/
+.vite/
+
+# Environment
+.env
+.env.local
+
+# Results generated locally
 results/*.csv
 results/*.xlsx
 results/*.png
+results/*.json
 !results/.gitkeep
+
+# OS/editor
+.DS_Store
+.vscode/
+.idea/

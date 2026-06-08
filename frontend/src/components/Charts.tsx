@@ -1,0 +1,73 @@
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Legend,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis
+} from 'recharts';
+
+import type { MembershipFunctions, OptimizationResponse, SimulationSummaryRow } from '../types';
+
+export function RevenueComparisonChart({ data }: { data: SimulationSummaryRow[] }) {
+  return (
+    <div className="chart-box">
+      <ResponsiveContainer width="100%" height={280}>
+        <BarChart data={data}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="strategy" />
+          <YAxis />
+          <Tooltip />
+          <Bar dataKey="total_revenue" name="Receita total estimada" />
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+export function ConvergenceChart({ optimization }: { optimization?: OptimizationResponse }) {
+  if (!optimization) return null;
+  return (
+    <div className="chart-box">
+      <ResponsiveContainer width="100%" height={280}>
+        <LineChart data={optimization.history}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="generation" />
+          <YAxis />
+          <Tooltip />
+          <Legend />
+          <Line type="monotone" dataKey="best_fitness" name="Melhor aptidão" dot={false} />
+          <Line type="monotone" dataKey="average_fitness" name="Aptidão média" dot={false} />
+          <Line type="monotone" dataKey="worst_fitness" name="Pior aptidão" dot={false} />
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+export function MembershipChart({ data, variable }: { data?: MembershipFunctions; variable: string }) {
+  const item = data?.[variable];
+  if (!item) return null;
+
+  return (
+    <div className="chart-box">
+      <h3>{item.label}</h3>
+      <ResponsiveContainer width="100%" height={260}>
+        <LineChart data={item.points}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="x" />
+          <YAxis domain={[0, 1]} />
+          <Tooltip />
+          <Legend />
+          {item.terms.map((term) => (
+            <Line key={term} type="monotone" dataKey={term} name={term} dot={false} />
+          ))}
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
