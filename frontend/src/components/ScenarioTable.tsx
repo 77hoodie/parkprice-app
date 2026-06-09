@@ -12,6 +12,7 @@ export function ScenarioTable({ rows }: { rows: SimulationRow[] }) {
             <th>Preço</th>
             <th>Receita estimada</th>
             <th>Ocupação prevista</th>
+            <th>Comportamento esperado</th>
           </tr>
         </thead>
         <tbody>
@@ -23,6 +24,7 @@ export function ScenarioTable({ rows }: { rows: SimulationRow[] }) {
               <td>R$ {row.price.toFixed(2)}</td>
               <td>R$ {row.revenue_estimate.toFixed(2)}</td>
               <td>{row.predicted_occupancy.toFixed(2)}%</td>
+              <td>{row.expected_behavior}</td>
             </tr>
           ))}
         </tbody>

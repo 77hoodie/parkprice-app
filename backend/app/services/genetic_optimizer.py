@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import random
+import time
 from statistics import mean, stdev
 from typing import Dict, List, Sequence
 
@@ -63,18 +64,23 @@ def optimize_rule_weights(
 ) -> Dict[str, object]:
     """Executa um Algoritmo Genetico simples e autocontido.
 
-    A implementacao foi deixada sem dependencia externa para facilitar estudo e defesa.
-    Cada individuo e um vetor de pesos das 18 regras fuzzy.
+    Cada individuo representa uma solucao candidata como vetor de pesos das regras fuzzy:
+    [peso_R01, peso_R02, ..., peso_R18]. A aptidao combina receita estimada e penalidades
+    operacionais para evitar ocupacao extrema, preco injusto e baixa rotatividade.
     """
 
+    start = time.perf_counter()
     random.seed(seed)
     rule_count = len(RULES)
     population_size = max(8, int(population_size))
-    generations = int(generations)
+    generations = max(1, int(generations))
+    crossover_probability = max(0.0, min(1.0, float(crossover_probability)))
+    mutation_probability = max(0.0, min(1.0, float(mutation_probability)))
 
     population = [_new_individual(rule_count) for _ in range(population_size)]
     history: List[Dict[str, float]] = []
     fitnesses = _evaluate_population(scenarios, population)
+    evaluation_count = population_size
 
     for generation in range(generations + 1):
         best_fitness = max(fitnesses)
@@ -115,12 +121,14 @@ def optimize_rule_weights(
 
         population = next_population
         fitnesses = _evaluate_population(scenarios, population)
+        evaluation_count += population_size
 
     best_index = max(range(len(population)), key=lambda index: fitnesses[index])
     best_weights = [round(_clamp_weight(value), 4) for value in population[best_index]]
     best_fitness = float(fitnesses[best_index])
     comparison = run_comparison(scenarios, optimized_rule_weights=best_weights)
     summary = summarize_comparison(comparison)
+    runtime_ms = (time.perf_counter() - start) * 1000
 
     return {
         "weights": best_weights,
@@ -140,6 +148,11 @@ def optimize_rule_weights(
             "elitism": "1 melhor individuo preservado",
             "weight_bounds": [MIN_WEIGHT, MAX_WEIGHT],
         },
+        "performance": {
+            "runtime_ms": round(runtime_ms, 2),
+            "evaluations": int(evaluation_count),
+            "rule_count": int(rule_count),
+        },
     }
 
 
@@ -148,6 +161,8 @@ def run_independent_optimizations(
     seeds: Sequence[int],
     population_size: int = 32,
     generations: int = 30,
+    crossover_probability: float = 0.72,
+    mutation_probability: float = 0.28,
 ) -> Dict[str, object]:
     runs = []
     for seed in seeds:
@@ -156,6 +171,8 @@ def run_independent_optimizations(
             population_size=population_size,
             generations=generations,
             seed=int(seed),
+            crossover_probability=crossover_probability,
+            mutation_probability=mutation_probability,
         )
         runs.append(
             {
@@ -163,10 +180,12 @@ def run_independent_optimizations(
                 "fitness": result["fitness"],
                 "weights": result["weights"],
                 "history": result["history"],
+                "performance": result["performance"],
             }
         )
 
     fitness_values = [float(run["fitness"]) for run in runs]
+    runtime_values = [float(run["performance"]["runtime_ms"]) for run in runs]
     best_run = max(runs, key=lambda item: float(item["fitness"]))
     return {
         "runs": runs,
@@ -176,7 +195,83 @@ def run_independent_optimizations(
             "mean_fitness": round(mean(fitness_values), 4),
             "std_fitness": round(stdev(fitness_values), 4) if len(fitness_values) > 1 else 0.0,
             "worst_fitness": round(min(fitness_values), 4),
+            "mean_runtime_ms": round(mean(runtime_values), 2),
+            "mean_evaluations": round(mean([float(run["performance"]["evaluations"]) for run in runs]), 2),
             "seeds": [int(seed) for seed in seeds],
+            "population_size": int(population_size),
+            "generations": int(generations),
+            "crossover_probability": float(crossover_probability),
+            "mutation_probability": float(mutation_probability),
         },
         "best_run": best_run,
+    }
+
+
+def run_parameter_sensitivity(
+    scenarios: pd.DataFrame,
+    seed: int = 42,
+    baseline_population_size: int = 24,
+    baseline_generations: int = 18,
+    baseline_crossover_probability: float = 0.72,
+    baseline_mutation_probability: float = 0.28,
+) -> Dict[str, object]:
+    """Executa uma analise experimental curta variando 4 parametros do AG.
+
+    A rotina foi desenhada para demonstracao: varia um parametro por vez mantendo os demais
+    no baseline. Para o relatorio final, a equipe pode aumentar as repeticoes e sementes.
+    """
+
+    baseline = {
+        "population_size": int(baseline_population_size),
+        "generations": int(baseline_generations),
+        "crossover_probability": float(baseline_crossover_probability),
+        "mutation_probability": float(baseline_mutation_probability),
+    }
+
+    experiments = []
+    variations = {
+        "population_size": sorted(set([16, baseline["population_size"], 40])),
+        "generations": sorted(set([10, baseline["generations"], 30])),
+        "crossover_probability": sorted(set([0.55, baseline["crossover_probability"], 0.85])),
+        "mutation_probability": sorted(set([0.12, baseline["mutation_probability"], 0.42])),
+    }
+
+    for parameter, values in variations.items():
+        for value in values:
+            params = baseline.copy()
+            params[parameter] = value
+            result = optimize_rule_weights(
+                scenarios=scenarios,
+                seed=seed,
+                population_size=int(params["population_size"]),
+                generations=int(params["generations"]),
+                crossover_probability=float(params["crossover_probability"]),
+                mutation_probability=float(params["mutation_probability"]),
+            )
+            experiments.append(
+                {
+                    "parameter": parameter,
+                    "value": value,
+                    "fitness": result["fitness"],
+                    "runtime_ms": result["performance"]["runtime_ms"],
+                    "evaluations": result["performance"]["evaluations"],
+                    "population_size": params["population_size"],
+                    "generations": params["generations"],
+                    "crossover_probability": params["crossover_probability"],
+                    "mutation_probability": params["mutation_probability"],
+                }
+            )
+
+    best = max(experiments, key=lambda item: float(item["fitness"]))
+    return {
+        "baseline": baseline,
+        "seed": int(seed),
+        "rows": experiments,
+        "summary": {
+            "count": len(experiments),
+            "best_parameter": best["parameter"],
+            "best_value": best["value"],
+            "best_fitness": best["fitness"],
+            "note": "Estudo de sensibilidade inicial: um parametro variado por vez. Expandir no relatorio final se houver tempo.",
+        },
     }

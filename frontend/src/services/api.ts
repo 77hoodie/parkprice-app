@@ -1,10 +1,14 @@
 import type {
+  FuzzySensitivityResponse,
+  GeneticParameters,
   MembershipFunctions,
   MultiSeedResponse,
   OptimizationResponse,
+  ParameterSensitivityResponse,
   ParkingInputPayload,
   Recommendation,
   Rule,
+  Scenario,
   SimulationResponse
 } from '../types';
 
@@ -28,7 +32,7 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 }
 
 export const api = {
-  health: () => request<{ status: string }>('/health'),
+  health: () => request<{ status: string; sprint: string }>('/health'),
   recommend: (payload: ParkingInputPayload) =>
     request<Recommendation>('/recommend', {
       method: 'POST',
@@ -39,16 +43,33 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ optimized_rule_weights: weights ?? null })
     }),
-  optimize: (population_size: number, generations: number, seed: number) =>
+  optimize: (params: GeneticParameters) =>
     request<OptimizationResponse>('/optimize', {
       method: 'POST',
-      body: JSON.stringify({ population_size, generations, seed })
+      body: JSON.stringify(params)
     }),
-  runFiveSeeds: (population_size: number, generations: number, seeds: number[]) =>
+  runFiveSeeds: (params: GeneticParameters, seeds: number[]) =>
     request<MultiSeedResponse>('/experiments/run-5-seeds', {
       method: 'POST',
-      body: JSON.stringify({ population_size, generations, seeds })
+      body: JSON.stringify({ ...params, seeds })
+    }),
+  fuzzySensitivity: (variable: string, base_input: ParkingInputPayload, weights?: number[]) =>
+    request<FuzzySensitivityResponse>('/analysis/fuzzy-sensitivity', {
+      method: 'POST',
+      body: JSON.stringify({ variable, base_input, steps: 31, optimized_rule_weights: weights ?? null })
+    }),
+  parameterSensitivity: (params: GeneticParameters) =>
+    request<ParameterSensitivityResponse>('/analysis/parameter-sensitivity', {
+      method: 'POST',
+      body: JSON.stringify({
+        seed: params.seed,
+        baseline_population_size: params.population_size,
+        baseline_generations: params.generations,
+        baseline_crossover_probability: params.crossover_probability,
+        baseline_mutation_probability: params.mutation_probability
+      })
     }),
   rules: () => request<{ count: number; rules: Rule[] }>('/rules'),
+  scenarios: () => request<{ count: number; rows: Scenario[] }>('/scenarios'),
   membershipFunctions: () => request<MembershipFunctions>('/membership-functions')
 };

@@ -1,17 +1,25 @@
 from __future__ import annotations
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-from .schemas import MultiSeedExperimentRequest, OptimizeRequest, ParkingInputPayload, SimulationRequest
+from .schemas import (
+    MultiSeedExperimentRequest,
+    OptimizeRequest,
+    ParameterSensitivityRequest,
+    ParkingInputPayload,
+    SensitivityRequest,
+    SimulationRequest,
+)
 from .services.fuzzy_model import ParkingInputs, RULES, membership_function_points, recommend_price
-from .services.genetic_optimizer import optimize_rule_weights, run_independent_optimizations
+from .services.genetic_optimizer import optimize_rule_weights, run_independent_optimizations, run_parameter_sensitivity
 from .services.metrics import dataframe_to_records, summarize_comparison
+from .services.sensitivity import run_fuzzy_sensitivity
 from .services.simulator import load_scenarios, run_comparison
 
 app = FastAPI(
     title="ParkPrice AI API",
-    version="0.1.0-sprint1",
+    version="0.2.0-sprint2",
     description="API Python para recomendacao fuzzy-evolutiva de tarifa dinamica em estacionamentos.",
 )
 
@@ -28,15 +36,21 @@ app.add_middleware(
 def root() -> dict:
     return {
         "project": "ParkPrice AI",
-        "sprint": "Sprint 1",
+        "sprint": "Sprint 2",
         "status": "running",
         "docs": "/docs",
+        "highlights": [
+            "modo produto/apresentacao no frontend",
+            "parametros editaveis do AG",
+            "analise de sensibilidade fuzzy",
+            "analise experimental de 4 parametros evolutivos",
+        ],
     }
 
 
 @app.get("/health")
 def health() -> dict:
-    return {"status": "ok"}
+    return {"status": "ok", "sprint": "2"}
 
 
 @app.get("/rules")
@@ -83,6 +97,8 @@ def optimize(payload: OptimizeRequest) -> dict:
         population_size=payload.population_size,
         generations=payload.generations,
         seed=payload.seed,
+        crossover_probability=payload.crossover_probability,
+        mutation_probability=payload.mutation_probability,
     )
 
 
@@ -94,4 +110,32 @@ def run_five_seed_experiment(payload: MultiSeedExperimentRequest) -> dict:
         seeds=payload.seeds,
         population_size=payload.population_size,
         generations=payload.generations,
+        crossover_probability=payload.crossover_probability,
+        mutation_probability=payload.mutation_probability,
+    )
+
+
+@app.post("/analysis/fuzzy-sensitivity")
+def fuzzy_sensitivity(payload: SensitivityRequest) -> dict:
+    try:
+        return run_fuzzy_sensitivity(
+            variable=payload.variable,
+            base_input=ParkingInputs(**payload.base_input.model_dump()),
+            steps=payload.steps,
+            optimized_rule_weights=payload.optimized_rule_weights,
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.post("/analysis/parameter-sensitivity")
+def parameter_sensitivity(payload: ParameterSensitivityRequest) -> dict:
+    scenarios = load_scenarios()
+    return run_parameter_sensitivity(
+        scenarios=scenarios,
+        seed=payload.seed,
+        baseline_population_size=payload.baseline_population_size,
+        baseline_generations=payload.baseline_generations,
+        baseline_crossover_probability=payload.baseline_crossover_probability,
+        baseline_mutation_probability=payload.baseline_mutation_probability,
     )

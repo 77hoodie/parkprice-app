@@ -1,84 +1,81 @@
-# Alinhamento com a lauda e com o guia inicial
-
-## Enquadramento geral
-
-O ParkPrice AI foi estruturado como um sistema de apoio à decisão para precificação dinâmica de estacionamentos. A proposta é recomendar um multiplicador sobre a tarifa-base, e não simplesmente aumentar preço quando o estacionamento está cheio.
+# Alinhamento com laudas e guia — Sprint 2
 
 ## Parte 1 — Sistemas de Controle Fuzzy, Opção B
 
-A Sprint 1 atende à ideia de produto/aplicação de mercado porque possui:
+A Sprint 2 mantém o projeto como aplicação/produto de mercado baseado em controle fuzzy.
 
-- problema realista;
-- público-alvo identificável;
-- entradas e saída compreensíveis;
-- protótipo funcional;
-- base de regras;
-- funções de pertinência;
+Evidências implementadas:
+
+- problema realista: precificação dinâmica de estacionamentos;
+- público-alvo: administradores de estacionamentos privados, shoppings, faculdades, hospitais e centros comerciais;
+- decisão apoiada: recomendação de tarifa/multiplicador;
+- protótipo funcional em React + FastAPI;
+- 4 entradas fuzzy;
+- 1 saída fuzzy;
+- funções de pertinência em gráficos;
+- 18 regras;
 - cenários de teste;
-- interface demonstrável;
-- documentação de execução.
+- análise de sensibilidade;
+- documentação e execução.
 
-### Requisitos fuzzy contemplados
+## Equipe com 5 integrantes — Parte 1
 
-| Item | Como aparece na Sprint 1 |
-|---|---|
-| Pelo menos 2 entradas e 1 saída | 4 entradas e 1 saída |
-| Termos linguísticos | baixa/média/alta/crítica, baixa/moderada/alta etc. |
-| Funções de pertinência | Disponíveis em `/membership-functions` e na aba `Modelo fuzzy` |
-| Pelo menos 12 regras | 18 regras |
-| Pelo menos 6 cenários | 12 cenários sintéticos |
-| Validação | Comparação e tabelas de simulação |
-| Produto | Interface React + API Python |
+A Sprint 2 favorece a trilha de ampliação técnica e validação ampliada:
 
-## Equipe com 5 integrantes na Parte 1
-
-A Sprint 1 já prepara a trilha de ampliação técnica do modelo:
-
-- usa mais de 3 entradas;
-- usa 18 regras;
-- usa 12 cenários de teste.
-
-Ainda falta expandir a análise de sensibilidade para ficar mais forte no relatório final.
+- no mínimo 3 entradas: o projeto usa 4;
+- pelo menos 18 regras: o projeto usa 18;
+- no mínimo 12 cenários: o projeto usa 12;
+- análise de sensibilidade: implementada em `/analysis/fuzzy-sensitivity`.
 
 ## Parte 2 — IA Evolutiva e Computação Bioinspirada, Opção 2
 
-A Sprint 1 atende à trilha de protótipo de programa porque possui:
+Evidências implementadas:
 
-- problema de otimização;
-- representação de solução;
-- função de aptidão;
-- restrições indiretas e penalidades;
-- algoritmo evolutivo;
-- parâmetros;
-- critérios de parada;
-- comparação com baseline;
-- rotina com 5 execuções independentes.
+- protótipo executável;
+- motor evolutivo integrado ao produto;
+- representação de solução como vetor de pesos das regras;
+- função de aptidão com receita e penalidades;
+- restrições por limites de peso e multiplicador;
+- parâmetros do algoritmo;
+- operadores evolutivos;
+- critério de parada por gerações;
+- comparação com tarifa fixa, heurística simples e fuzzy manual;
+- 5 execuções independentes;
+- curva de convergência;
+- tempo de execução e avaliações.
 
-### Elementos evolutivos contemplados
+## Equipe com 5 integrantes — Parte 2
 
-| Item | Como aparece na Sprint 1 |
-|---|---|
-| Algoritmo | Algoritmo Genético |
-| Representação | Vetor com 18 pesos de regras |
-| Fitness | Receita estimada menos penalidades operacionais e éticas |
-| Operadores | Seleção por torneio, crossover blend, mutação gaussiana e elitismo |
-| Parâmetros | população, gerações, seed, probabilidades |
-| Comparação | tarifa fixa, heurística, fuzzy manual, fuzzy otimizado |
-| 5 sementes | endpoint `/experiments/run-5-seeds` |
+A Sprint 2 favorece a trilha de análise experimental ampliada:
 
-## Equipe com 5 integrantes na Parte 2
+- variação de população;
+- variação de gerações;
+- variação de crossover;
+- variação de mutação;
+- discussão de impacto em fitness, tempo e avaliações.
 
-A Sprint 1 favorece duas possibilidades:
+Endpoint relacionado:
 
-1. **Produto ampliado**, pela existência de interface React + API FastAPI.
-2. **Análise experimental ampliada**, pela base de simulação e rotina de 5 sementes.
+```text
+POST /analysis/parameter-sensitivity
+```
 
-A recomendação é escolher uma das duas oficialmente no relatório. Para a Sprint 2, a melhor escolha provavelmente é análise experimental ampliada, variando quatro parâmetros do AG e discutindo impacto em convergência, aptidão e custo computacional.
+## Guia inicial ParkPrice AI
 
-## Pontos de cuidado
+A Sprint 2 segue o guia nos pontos principais:
 
-- Declarar que os dados são sintéticos controlados.
-- Não vender o sistema como produto comercial final.
-- Defender que o objetivo é equilíbrio entre receita, ocupação, rotatividade e justiça tarifária.
-- Não deixar a interface esconder a parte técnica.
-- Garantir que todos consigam explicar fuzzy, AG, fitness e validação.
+- fuzzy interpreta variáveis graduais;
+- AG otimiza parâmetros do fuzzy;
+- saída é multiplicador sobre tarifa-base;
+- objetivo equilibra receita, ocupação, rotatividade e justiça tarifária;
+- comparação inclui tarifa fixa, heurística simples, fuzzy manual e fuzzy otimizado;
+- paleta visual em preto, branco e tons de cinza.
+
+## Pontos ainda pendentes para versão final
+
+- Transformar resultados exportados em tabelas/figuras no PDF técnico.
+- Preparar slides objetivos.
+- Inserir declaração de uso de IA.
+- Revisar referências.
+- Garantir que todos os integrantes saibam executar e explicar o projeto.
+- Confirmar autorização da equipe com 5 integrantes.

@@ -1,23 +1,11 @@
-# Passo a passo de instalação e execução
+# Guia de execução — Sprint 2
 
-Este documento descreve como executar a Sprint 1 do ParkPrice AI em ambiente local.
-
-## 1. Baixar e extrair
-
-Extraia o arquivo ZIP em uma pasta de trabalho. Entre na pasta raiz:
-
-```bash
-cd parkprice-ai-sprint1
-```
-
-## 2. Executar o backend Python
+## 1. Backend
 
 ```bash
 cd backend
 python -m venv .venv
 ```
-
-Ativar ambiente virtual:
 
 Windows:
 
@@ -37,21 +25,28 @@ Instalar dependências:
 pip install -r requirements.txt
 ```
 
-Subir servidor:
+Rodar API:
 
 ```bash
 uvicorn app.main:app --reload
 ```
 
-Acesse:
+URLs:
 
 ```text
-http://localhost:8000/docs
+API:  http://localhost:8000
+Docs: http://localhost:8000/docs
 ```
 
-## 3. Executar frontend React
+Teste:
 
-Abra outro terminal na raiz do projeto:
+```bash
+curl http://localhost:8000/health
+```
+
+## 2. Frontend
+
+Em outro terminal:
 
 ```bash
 cd frontend
@@ -59,59 +54,70 @@ npm install
 npm run dev
 ```
 
-Acesse:
+URL:
 
 ```text
 http://localhost:5173
 ```
 
-## 4. Verificar se tudo está conectado
-
-1. Backend aberto em `http://localhost:8000`.
-2. Frontend aberto em `http://localhost:5173`.
-3. Na interface, clique em `Calcular recomendação`.
-4. Depois entre em `Simulação` e rode os cenários.
-5. Depois entre em `Evolutivo` e rode o AG.
-6. Por fim, rode `5 sementes` para gerar estatísticas de estabilidade.
-
-## 5. Rodar testes
-
-No terminal do backend, com ambiente virtual ativado:
+Caso a API esteja em outro endereço:
 
 ```bash
-pytest
+cd frontend
 ```
 
-## 6. Problemas comuns
-
-### Erro de CORS
-
-Confirme se o frontend está em `http://localhost:5173`. Esse endereço já está liberado no backend.
-
-### Frontend não acha a API
-
-Crie `frontend/.env.local`:
+Criar `.env.local`:
 
 ```env
 VITE_API_URL=http://localhost:8000
 ```
 
-Reinicie o frontend.
+## 3. Testes
 
-### Erro no DEAP
-
-Instale novamente as dependências no ambiente virtual:
+Backend:
 
 ```bash
-pip install -r requirements.txt
+cd backend
+pytest
 ```
 
-### Porta ocupada
-
-Backend em outra porta:
+Frontend:
 
 ```bash
-uvicorn app.main:app --reload --port 8001
+cd frontend
+npm run build
 ```
 
-Depois ajuste `VITE_API_URL` no frontend.
+## 4. Fluxo recomendado para testar manualmente
+
+1. Rodar backend.
+2. Rodar frontend.
+3. Abrir `http://localhost:5173`.
+4. Confirmar que o modo inicial é **Produto**.
+5. Clicar em preset **Quase lotado**.
+6. Conferir tarifa final, multiplicador e justificativa.
+7. Alternar para **Modo Apresentação**.
+8. Abrir **Modelo fuzzy** e verificar gráficos e regras.
+9. Abrir **Simulação** e rodar comparação.
+10. Abrir **Evolutivo** e executar AG.
+11. Rodar 5 sementes.
+12. Abrir **Experimentos** e executar sensibilidade fuzzy e do AG.
+13. Testar exportações JSON/CSV.
+
+## 5. Problemas comuns
+
+### Frontend não conecta na API
+
+Verifique se o backend está rodando em `http://localhost:8000`. Se estiver em outra porta, configure `frontend/.env.local`.
+
+### Erro de CORS
+
+A API já permite `http://localhost:5173` e `http://127.0.0.1:5173`. Se usar outra porta, adicione em `backend/app/main.py`.
+
+### `npm run build` mostra aviso de bundle grande
+
+É um aviso do Vite por causa de gráficos e ícones. Não impede execução.
+
+### O AG demora
+
+Reduza população e gerações na interface. Para demonstração rápida, use população 16 e gerações 10.

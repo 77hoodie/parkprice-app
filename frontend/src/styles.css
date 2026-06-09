@@ -1,7 +1,7 @@
 :root {
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: #111111;
-  background: #f5f5f5;
+  background: #f4f4f4;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
 }
@@ -14,6 +14,9 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(0, 0, 0, 0.08), transparent 34rem),
+    linear-gradient(180deg, #fafafa 0%, #efefef 100%);
 }
 
 button,
@@ -21,15 +24,19 @@ input {
   font: inherit;
 }
 
+button {
+  border: 0;
+}
+
 main {
-  width: min(1440px, calc(100% - 32px));
+  width: min(1480px, calc(100% - 32px));
   margin: 0 auto;
   padding: 32px 0 48px;
 }
 
 .hero {
   display: grid;
-  grid-template-columns: 1fr 360px;
+  grid-template-columns: 1fr 390px;
   gap: 24px;
   align-items: stretch;
   margin-bottom: 22px;
@@ -38,24 +45,32 @@ main {
 .hero > div:first-child,
 .hero-card,
 .panel {
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.94);
   border: 1px solid #d7d7d7;
-  border-radius: 24px;
-  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.06);
+  border-radius: 28px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.07);
 }
 
 .hero > div:first-child {
   padding: 34px;
 }
 
+.hero-title-row {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
 .hero h1 {
   margin: 0 0 10px;
   font-size: clamp(2.4rem, 6vw, 5rem);
   letter-spacing: -0.08em;
+  line-height: 0.94;
 }
 
 .hero p {
-  max-width: 860px;
+  max-width: 880px;
   margin: 0;
   color: #555;
   line-height: 1.6;
@@ -63,42 +78,83 @@ main {
 
 .eyebrow {
   text-transform: uppercase;
-  letter-spacing: 0.14em;
-  font-size: 0.78rem;
+  letter-spacing: 0.16em;
+  font-size: 0.76rem;
   color: #666;
   margin-bottom: 10px !important;
+  font-weight: 800;
 }
 
 .hero-card {
-  padding: 28px;
+  padding: 30px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background: linear-gradient(145deg, #111, #393939);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.08), transparent),
+    linear-gradient(145deg, #111, #3b3b3b);
   color: #fff;
 }
 
 .hero-card span {
   color: #cfcfcf;
   font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .hero-card strong {
   display: block;
-  font-size: 1.5rem;
-  margin: 8px 0;
+  font-size: 1.7rem;
+  margin: 10px 0;
+  letter-spacing: -0.04em;
 }
 
 .hero-card small {
   color: #d7d7d7;
-  line-height: 1.5;
+  line-height: 1.6;
+}
+
+.mode-switch {
+  display: inline-flex;
+  padding: 5px;
+  border-radius: 999px;
+  border: 1px solid #cfcfcf;
+  background: #f6f6f6;
+  white-space: nowrap;
+}
+
+.mode-switch button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  color: #333;
+  background: transparent;
+  cursor: pointer;
+  transition: 0.18s ease;
+}
+
+.mode-switch button.active {
+  color: #fff;
+  background: #111;
 }
 
 .tabs {
+  position: sticky;
+  top: 10px;
+  z-index: 10;
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
   margin: 18px 0 24px;
+  padding: 10px;
+  border: 1px solid #dedede;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 16px 60px rgba(0, 0, 0, 0.06);
 }
 
 .tabs button,
@@ -116,6 +172,14 @@ main {
   transition: 0.2s ease;
 }
 
+.tabs button:hover,
+.secondary-button:hover,
+.primary-button:hover,
+.mode-switch button:hover,
+.preset-card:hover {
+  transform: translateY(-1px);
+}
+
 .tabs button.active,
 .primary-button {
   background: #111;
@@ -125,6 +189,7 @@ main {
 button:disabled {
   opacity: 0.55;
   cursor: not-allowed;
+  transform: none !important;
 }
 
 .grid.two-columns {
@@ -153,14 +218,17 @@ button:disabled {
 .panel h2 {
   margin: 0 0 4px;
   font-size: 1.35rem;
+  letter-spacing: -0.03em;
 }
 
 .panel h3 {
   margin: 20px 0 12px;
+  letter-spacing: -0.02em;
 }
 
 .panel p,
-.panel-header p {
+.panel-header p,
+.note-text {
   margin: 0;
   color: #666;
   line-height: 1.5;
@@ -171,10 +239,12 @@ button:disabled {
   gap: 18px;
 }
 
-.parameter-panel label {
+.parameter-panel label,
+.ga-grid label {
   display: grid;
   gap: 8px;
   color: #333;
+  font-weight: 700;
 }
 
 .input-row {
@@ -188,6 +258,7 @@ input[type="number"] {
   border: 1px solid #ccc;
   border-radius: 12px;
   padding: 10px;
+  background: #fff;
 }
 
 input[type="range"] {
@@ -202,11 +273,16 @@ input[type="range"] {
   margin-bottom: 18px;
 }
 
+.metrics-grid.four {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 .metric-card {
   border: 1px solid #d8d8d8;
-  border-radius: 18px;
+  border-radius: 20px;
   padding: 16px;
-  background: #fafafa;
+  background:
+    linear-gradient(180deg, #fff, #fafafa);
 }
 
 .metric-card span,
@@ -215,10 +291,20 @@ input[type="range"] {
   color: #666;
 }
 
+.metric-card span {
+  font-size: 0.9rem;
+}
+
 .metric-card strong {
   display: block;
   margin-top: 8px;
-  font-size: 1.5rem;
+  font-size: 1.55rem;
+  letter-spacing: -0.04em;
+}
+
+.metric-card small {
+  margin-top: 6px;
+  line-height: 1.35;
 }
 
 .explanation-box,
@@ -233,6 +319,7 @@ input[type="range"] {
 .explanation-box {
   background: #f2f2f2;
   border: 1px solid #ddd;
+  margin-bottom: 18px;
 }
 
 .error-box {
@@ -253,6 +340,7 @@ input[type="range"] {
   overflow-x: auto;
   border: 1px solid #ddd;
   border-radius: 18px;
+  background: #fff;
 }
 
 table {
@@ -286,7 +374,7 @@ tr:last-child td {
 
 .chart-box {
   border: 1px solid #ddd;
-  border-radius: 18px;
+  border-radius: 20px;
   padding: 16px;
   background: #fff;
   margin: 14px 0;
@@ -305,38 +393,139 @@ tr:last-child td {
   margin-bottom: 16px;
 }
 
+.badge-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.evidence-badge {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  border: 1px solid #cacaca;
+  background: #fff;
+  color: #222;
+  border-radius: 999px;
+  padding: 8px 10px;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.feature-grid,
+.checklist-grid,
+.study-grid,
+.preset-grid,
+.ga-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.feature-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.feature-grid article,
+.study-grid article,
+.preset-card {
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  padding: 18px;
+  background: #fafafa;
+}
+
+.feature-grid h3,
+.study-grid h3 {
+  margin: 12px 0 8px;
+}
+
+.checklist-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.checklist-grid span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #e0e0e0;
+  border-radius: 16px;
+  padding: 12px;
+  background: #fbfbfb;
+  color: #333;
+}
+
+.preset-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.preset-card {
+  cursor: pointer;
+  text-align: left;
+  transition: 0.2s ease;
+}
+
+.preset-card strong,
+.preset-card span {
+  display: block;
+}
+
+.preset-card strong {
+  margin-bottom: 6px;
+}
+
+.preset-card span {
+  color: #666;
+  line-height: 1.4;
+  font-size: 0.92rem;
+}
+
+.ga-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.study-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
 .code-box {
   background: #111;
   color: #fff;
   overflow: auto;
 }
 
-.study-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px;
+.mode-product .panel {
+  border-color: #dadada;
 }
 
-.study-grid article {
-  border: 1px solid #ddd;
-  border-radius: 18px;
-  padding: 18px;
-  background: #fafafa;
+.mode-presentation .hero-card {
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.08), transparent),
+    linear-gradient(145deg, #000, #262626);
 }
 
-.study-grid h3 {
-  margin: 12px 0 8px;
-}
-
-@media (max-width: 980px) {
+@media (max-width: 1120px) {
   .hero,
   .grid.two-columns,
   .membership-grid,
-  .study-grid {
+  .feature-grid,
+  .study-grid,
+  .ga-grid {
     grid-template-columns: 1fr;
   }
 
-  .metrics-grid {
+  .metrics-grid,
+  .metrics-grid.four,
+  .checklist-grid,
+  .preset-grid {
     grid-template-columns: 1fr;
+  }
+
+  .hero-title-row {
+    display: grid;
+  }
+
+  .tabs {
+    border-radius: 24px;
   }
 }

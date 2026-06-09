@@ -1,6 +1,4 @@
-# Roteiro de estudo para apresentação e arguição
-
-Este roteiro foi criado para a equipe estudar o projeto sem depender apenas do código.
+# Roteiro de estudo para apresentação
 
 ## Integrante 1 — Produto e problema
 
@@ -9,107 +7,120 @@ Precisa saber explicar:
 - qual problema o ParkPrice AI resolve;
 - quem é o público-alvo;
 - qual decisão o sistema apoia;
-- por que precificação dinâmica envolve incerteza e gradação;
-- por que o sistema não deve ser apresentado como mecanismo para cobrar mais caro;
-- limitações éticas e operacionais.
+- por que precificação dinâmica é um problema adequado;
+- por que o sistema não é apenas “aumentar preço quando lota”;
+- diferença entre Modo Produto e Modo Apresentação.
 
-Frase-base:
+Frase-chave:
 
-> O ParkPrice AI é um sistema de apoio à decisão que recomenda um multiplicador de tarifa buscando equilíbrio entre receita, ocupação, rotatividade e justiça tarifária.
+> O ParkPrice AI é um sistema de apoio à decisão que recomenda um multiplicador sobre a tarifa-base, equilibrando receita, ocupação, rotatividade e justiça tarifária.
 
-## Integrante 2 — Modelo fuzzy
+## Integrante 2 — Fuzzy
 
 Precisa saber explicar:
 
-- variáveis de entrada;
-- universo de discurso de cada variável;
+- variáveis de entrada e saída;
+- universos de discurso;
 - termos linguísticos;
 - funções triangulares e trapezoidais;
-- base de regras;
-- por que existem regras para conflitos;
-- por que o fuzzy é adequado ao problema.
-
-Perguntas prováveis:
-
-- Por que ocupação tem termo crítico?
-- Por que permanência média influencia preço?
-- O que acontece quando ocupação é baixa mas evento é forte?
-
-## Integrante 3 — Inferência e defuzzificação
-
-Precisa saber explicar:
-
-- fuzzificação;
+- base de 18 regras;
 - operador AND por mínimo;
-- implicação por recorte;
 - agregação por máximo;
-- centroide;
-- multiplicador final;
-- diferença entre saída linguística e saída numérica.
+- defuzzificação por centroide;
+- como interpretar regras ativadas.
 
 Pergunta provável:
 
-- Como o sistema transforma regras linguísticas em preço final?
+> Por que lógica fuzzy é adequada para esse problema?
 
 Resposta esperada:
 
-> Ele calcula os graus de pertinência das entradas, ativa regras, agrega as saídas fuzzy e usa centroide para obter um multiplicador numérico aplicado à tarifa-base.
+> Porque o domínio usa conceitos graduais, como ocupação alta, demanda moderada, evento forte e permanência longa. Essas categorias não são binárias.
 
-## Integrante 4 — Algoritmo Genético
+## Integrante 3 — Computação evolutiva
 
 Precisa saber explicar:
 
-- por que existe otimização;
-- representação da solução;
-- o que cada gene significa;
+- por que foi escolhido Algoritmo Genético;
+- como uma solução é representada;
+- o que é população;
+- o que é fitness;
 - seleção por torneio;
-- crossover;
-- mutação;
+- crossover blend;
+- mutação gaussiana;
 - elitismo;
-- gerações e população;
-- seed.
+- critério de parada.
 
-Representação:
+Frase-chave:
 
-```text
-[peso_R01, peso_R02, ..., peso_R18]
-```
+> Cada indivíduo do AG é um vetor de pesos das 18 regras fuzzy. O AG procura pesos que melhorem a aptidão nos cenários simulados.
 
-Pergunta provável:
-
-- O AG muda as regras?
-
-Resposta esperada:
-
-> Na Sprint 1, o AG não muda a lógica textual das regras. Ele ajusta os pesos, ou seja, a influência relativa de cada regra na saída agregada.
-
-## Integrante 5 — Validação, métricas e resultados
+## Integrante 4 — Testes, validação e métricas
 
 Precisa saber explicar:
 
-- cenários sintéticos controlados;
+- 12 cenários sintéticos controlados;
 - tarifa fixa;
 - heurística simples;
 - fuzzy manual;
 - fuzzy otimizado;
+- 5 execuções independentes;
+- melhor, média e desvio-padrão;
 - curva de convergência;
-- melhor, média e desvio-padrão em 5 sementes;
-- limitações dos dados sintéticos.
+- tempo e número de avaliações.
 
-Perguntas prováveis:
+Frase-chave:
 
-- Por que 5 execuções?
-- Como vocês sabem que o AG melhorou?
-- Quais são as limitações da simulação?
+> A validação compara estratégias sob as mesmas hipóteses de simulação, por isso os dados são sintéticos controlados e não previsão real de receita.
 
-## Todos os integrantes
+## Integrante 5 — Interface, documentação e reprodutibilidade
 
-Todos precisam saber responder:
+Precisa saber explicar:
 
-1. O que entra no sistema?
-2. O que sai do sistema?
-3. Quantas regras existem?
-4. Qual algoritmo evolutivo foi usado?
-5. O que a fitness tenta equilibrar?
-6. Quais baselines foram comparados?
-7. O que ainda precisa melhorar?
+- arquitetura React + FastAPI;
+- como executar backend e frontend;
+- endpoints principais;
+- exportação JSON/CSV;
+- organização do GitHub;
+- README;
+- declaração de uso de IA;
+- limitações e melhorias futuras.
+
+Frase-chave:
+
+> A interface organiza a demonstração, mas os cálculos estão na API Python para manter o motor fuzzy-evolutivo testável e reutilizável.
+
+## Demonstração sugerida no dia
+
+1. Abrir Modo Produto.
+2. Usar preset **Quase lotado**.
+3. Explicar recomendação final.
+4. Trocar para Modo Apresentação.
+5. Mostrar regras ativadas.
+6. Abrir funções de pertinência.
+7. Rodar simulação.
+8. Rodar AG.
+9. Rodar 5 sementes.
+10. Mostrar análise de sensibilidade.
+
+## Perguntas difíceis e respostas curtas
+
+### Os dados são reais?
+
+Não. São cenários sintéticos controlados, usados para validar coerência e comparar estratégias sob as mesmas hipóteses.
+
+### O sistema só aumenta preço?
+
+Não. Ele também recomenda desconto ou normalidade em cenários fracos, e a fitness penaliza preço injusto, ocupação extrema e baixa rotatividade.
+
+### O que o AG otimiza?
+
+Os pesos das regras fuzzy.
+
+### Por que não otimizar tudo?
+
+Porque a Sprint atual prioriza uma representação simples, explicável e defensável. Ajustar limites de pertinência pode ser melhoria futura.
+
+### O que prova que melhorou?
+
+Comparação contra tarifa fixa, heurística simples e fuzzy manual, além da curva de convergência e das 5 execuções independentes.

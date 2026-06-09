@@ -1,24 +1,32 @@
-# ParkPrice AI — Sprint 1
+# ParkPrice AI — Sprint 2
 
 Sistema fuzzy-evolutivo para apoio à decisão em precificação dinâmica de estacionamentos.
 
-Esta Sprint 1 reorganiza o projeto inicial em uma arquitetura mais adequada para evolução acadêmica e demonstração:
+A Sprint 2 evolui a base da Sprint 1 para um protótipo acadêmico mais organizado para demonstração: a interface ganhou alternância entre **Modo Produto** e **Modo Apresentação**, enquanto a API Python recebeu endpoints de análise de sensibilidade, parâmetros editáveis do Algoritmo Genético e evidências experimentais mais fortes.
 
-- **Frontend React + Vite + TypeScript** para interface de produto/dashboard.
-- **Backend Python + FastAPI** para cálculos, simulações e otimização.
-- **Motor fuzzy Mamdani simplificado** com 4 entradas, 1 saída, 18 regras e defuzzificação por centroide.
-- **Algoritmo Genético** para otimizar pesos das regras fuzzy.
-- **Cenários sintéticos controlados** para comparação entre tarifa fixa, heurística simples, fuzzy manual e fuzzy otimizado.
-- **Rotina de 5 execuções independentes** com sementes distintas para avaliação de estabilidade.
-
-> Importante: esta Sprint 1 é uma base técnica inicial. A interface ajuda na demonstração, mas o foco avaliativo continua sendo modelagem fuzzy, otimização evolutiva, validação, documentação e domínio técnico da equipe.
+> A interface existe para demonstrar o produto com clareza. O foco avaliativo continua sendo: modelagem fuzzy, motor evolutivo, validação, comparação, documentação, reprodutibilidade e domínio técnico da equipe.
 
 ---
 
-## 1. Estrutura do projeto
+## 1. Principais entregas da Sprint 2
+
+- Switch **Modo Produto / Modo Apresentação**.
+- Presets de demonstração: dia fraco, dia comum, pico moderado, quase lotado, evento com vagas e conflito operacional.
+- Dashboard mais profissional e organizado com abas por contexto.
+- Parâmetros editáveis do AG: população, gerações, seed, crossover e mutação.
+- Métricas de custo computacional: tempo de execução e número de avaliações.
+- Análise de sensibilidade fuzzy variando uma entrada por vez.
+- Análise experimental ampliada variando quatro parâmetros do AG.
+- Exportação de resultados em JSON/CSV diretamente pela interface.
+- Documentação nova da Sprint 2.
+- Limpeza recomendada de entrega: `.git/`, `.venv/`, `node_modules/` e `dist/` não devem ir para o GitHub.
+
+---
+
+## 2. Estrutura do projeto
 
 ```text
-parkprice-ai-sprint1/
+parkprice-ai-sprint2/
 ├── backend/
 │   ├── app/
 │   │   ├── main.py                  # API FastAPI
@@ -26,20 +34,19 @@ parkprice-ai-sprint1/
 │   │   └── services/
 │   │       ├── fuzzy_model.py        # Modelo fuzzy Mamdani simplificado
 │   │       ├── simulator.py          # Cenários, baselines e fitness
-│   │       ├── genetic_optimizer.py  # Algoritmo Genético
+│   │       ├── genetic_optimizer.py  # Algoritmo Genético e sensibilidade do AG
+│   │       ├── sensitivity.py        # Sensibilidade fuzzy
 │   │       └── metrics.py            # Métricas e resumos
 │   ├── data/
 │   │   └── sample_scenarios.csv      # 12 cenários sintéticos controlados
 │   ├── tests/
-│   │   ├── test_api.py
-│   │   └── test_fuzzy_model.py
 │   └── requirements.txt
 │
 ├── frontend/
 │   ├── src/
 │   │   ├── components/              # Componentes visuais
 │   │   ├── services/api.ts           # Cliente da API
-│   │   ├── App.tsx                   # Interface principal
+│   │   ├── App.tsx                   # Interface principal com switch de modo
 │   │   ├── styles.css                # Paleta preto/branco/cinza
 │   │   └── types.ts
 │   ├── package.json
@@ -50,18 +57,19 @@ parkprice-ai-sprint1/
 │   ├── API.md
 │   ├── DECISOES_TECNICAS.md
 │   ├── EXECUCAO.md
+│   ├── ROTEIRO_DE_ESTUDO.md
 │   ├── SPRINT_1.md
-│   └── ROTEIRO_DE_ESTUDO.md
+│   └── SPRINT_2.md
 │
-├── results/
 ├── assets/
+├── results/
 ├── .gitignore
 └── README.md
 ```
 
 ---
 
-## 2. Pré-requisitos
+## 3. Pré-requisitos
 
 Instale antes de executar:
 
@@ -69,26 +77,24 @@ Instale antes de executar:
 - Node.js 20 ou superior
 - npm 10 ou superior
 
-Versões anteriores podem funcionar, mas estas são as recomendadas para reduzir erro de ambiente.
-
 ---
 
-## 3. Como executar o backend
+## 4. Como executar o backend
 
-Abra um terminal na pasta raiz do projeto e rode:
+A partir da raiz do projeto:
 
 ```bash
 cd backend
 python -m venv .venv
 ```
 
-No Windows:
+Windows:
 
 ```bash
 .venv\Scripts\activate
 ```
 
-No Linux/macOS:
+Linux/macOS:
 
 ```bash
 source .venv/bin/activate
@@ -112,7 +118,7 @@ A API ficará disponível em:
 http://localhost:8000
 ```
 
-A documentação interativa do FastAPI ficará em:
+Documentação interativa:
 
 ```text
 http://localhost:8000/docs
@@ -127,14 +133,14 @@ curl http://localhost:8000/health
 Resposta esperada:
 
 ```json
-{"status":"ok"}
+{"status":"ok","sprint":"2"}
 ```
 
 ---
 
-## 4. Como executar o frontend
+## 5. Como executar o frontend
 
-Em outro terminal, a partir da raiz do projeto:
+Em outro terminal, a partir da raiz:
 
 ```bash
 cd frontend
@@ -148,7 +154,7 @@ A interface ficará disponível em:
 http://localhost:5173
 ```
 
-Se a API estiver em outro endereço, crie um arquivo `frontend/.env.local`:
+Se a API estiver em outro endereço, crie `frontend/.env.local`:
 
 ```env
 VITE_API_URL=http://localhost:8000
@@ -156,40 +162,49 @@ VITE_API_URL=http://localhost:8000
 
 ---
 
-## 5. Como rodar os testes do backend
+## 6. Como rodar os testes
 
-Com o ambiente virtual ativado:
+Backend:
 
 ```bash
 cd backend
 pytest
 ```
 
-Os testes verificam:
+Build do frontend:
 
-- saúde da API;
-- endpoint de recomendação;
-- endpoint de simulação;
-- retorno mínimo do modelo fuzzy;
-- presença de pelo menos 18 regras.
+```bash
+cd frontend
+npm run build
+```
 
----
+Validação feita nesta Sprint 2:
 
-## 6. Fluxo principal do protótipo
+```text
+Backend: 7 passed
+Frontend: build concluído com sucesso
+```
 
-1. Usuário informa tarifa-base, ocupação, demanda, evento/pico e permanência média.
-2. API calcula graus de pertinência das entradas.
-3. Base de regras fuzzy é ativada.
-4. Saída fuzzy é agregada e defuzzificada por centroide.
-5. Sistema retorna multiplicador, tarifa recomendada e justificativa.
-6. Simulador compara tarifa fixa, heurística simples e fuzzy manual.
-7. Algoritmo Genético otimiza pesos das regras.
-8. Sistema compara fuzzy manual e fuzzy otimizado.
-9. Rotina de 5 sementes mede estabilidade do método evolutivo.
+O build pode avisar que o bundle JavaScript ficou acima de 500 kB por causa de gráficos e bibliotecas de UI. Isso não impede execução; é apenas um aviso de otimização futura.
 
 ---
 
-## 7. Endpoints principais
+## 7. Fluxo de demonstração sugerido
+
+1. Abrir a interface em **Modo Produto**.
+2. Explicar problema, público-alvo e decisão apoiada.
+3. Usar um preset, por exemplo **Quase lotado**.
+4. Mostrar tarifa recomendada, multiplicador e justificativa operacional.
+5. Alternar para **Modo Apresentação**.
+6. Mostrar regras ativadas, funções de pertinência e saída agregada.
+7. Rodar simulação e comparação de estratégias.
+8. Rodar AG com parâmetros editáveis.
+9. Rodar 5 sementes e explicar estabilidade.
+10. Abrir Experimentos e mostrar sensibilidade fuzzy e sensibilidade dos parâmetros do AG.
+
+---
+
+## 8. Endpoints principais
 
 ```text
 GET  /health
@@ -200,47 +215,26 @@ POST /recommend
 POST /simulate
 POST /optimize
 POST /experiments/run-5-seeds
+POST /analysis/fuzzy-sensitivity
+POST /analysis/parameter-sensitivity
 ```
 
-Detalhes completos estão em `docs/API.md`.
+Detalhes em `docs/API.md`.
 
 ---
 
-## 8. O que estudar para apresentar
+## 9. O que ainda falta para a versão final
 
-A equipe precisa dominar:
-
-- problema, público-alvo e decisão apoiada;
-- diferença entre tarifa fixa, heurística, fuzzy manual e fuzzy otimizado;
-- variáveis fuzzy, universos de discurso e funções de pertinência;
-- base de regras e justificativa das regras;
-- inferência Mamdani: fuzzificação, ativação, implicação, agregação e defuzzificação;
-- representação evolutiva como vetor de pesos das regras;
-- função de aptidão com receita e penalidades;
-- operadores do AG: seleção, crossover, mutação e elitismo;
-- cenários sintéticos, baselines, curva de convergência e 5 sementes;
-- limitações, riscos de uso e próximos passos.
-
-Veja `docs/ROTEIRO_DE_ESTUDO.md`.
+- Revisar texto final do relatório PDF.
+- Adicionar declaração formal de uso de IA.
+- Tirar prints ou gerar evidências visuais para o relatório.
+- Definir divisão de fala entre os 5 integrantes.
+- Se houver tempo, persistir histórico de experimentos em arquivo ou banco simples.
+- Se houver tempo, permitir upload de cenários CSV pela interface.
+- Verificar com o professor se a equipe de 5 já tem autorização formal.
 
 ---
 
-## 9. Limitações da Sprint 1
+## 10. Observação acadêmica importante
 
-- Os dados ainda são sintéticos, não reais.
-- A simulação de receita é controlada e simplificada.
-- A interface ainda não exporta arquivos CSV/JSON, apesar de a arquitetura permitir isso.
-- O AG otimiza pesos das regras, mas ainda não ajusta limites das funções de pertinência.
-- A validação precisa ser expandida com gráficos exportáveis e análise escrita para o PDF final.
-
----
-
-## 10. Próximas sprints sugeridas
-
-- Exportação de resultados em CSV/JSON.
-- Persistência local dos experimentos.
-- Tela de configuração do AG.
-- Estudo de sensibilidade variando pelo menos 4 parâmetros.
-- Otimização também dos limites das pertinências.
-- Geração de gráficos para o relatório.
-- Preparação dos slides e PDF técnico.
+Os dados de receita, ocupação prevista e rotatividade são **sintéticos controlados**. Eles servem para comparar estratégias sob hipóteses iguais, não para prever receita real de um estacionamento específico.

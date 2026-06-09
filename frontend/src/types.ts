@@ -36,6 +36,17 @@ export type Rule = {
   rationale: string;
 };
 
+export type Scenario = {
+  scenario: string;
+  description: string;
+  base_rate: number;
+  occupancy: number;
+  demand: number;
+  event_level: number;
+  avg_stay_minutes: number;
+  expected_behavior: string;
+};
+
 export type SimulationSummaryRow = {
   strategy: string;
   average_price: number;
@@ -56,11 +67,23 @@ export type SimulationRow = {
   multiplier: number;
   revenue_estimate: number;
   predicted_occupancy: number;
+  avg_stay_minutes: number;
+  demand: number;
+  event_level: number;
+  occupancy: number;
 };
 
 export type SimulationResponse = {
   summary: SimulationSummaryRow[];
   rows: SimulationRow[];
+};
+
+export type GeneticParameters = {
+  population_size: number;
+  generations: number;
+  seed: number;
+  crossover_probability: number;
+  mutation_probability: number;
 };
 
 export type OptimizationResponse = {
@@ -70,6 +93,11 @@ export type OptimizationResponse = {
   comparison_summary: SimulationSummaryRow[];
   comparison_rows: SimulationRow[];
   parameters: Record<string, unknown>;
+  performance: {
+    runtime_ms: number;
+    evaluations: number;
+    rule_count: number;
+  };
 };
 
 export type MultiSeedResponse = {
@@ -79,9 +107,15 @@ export type MultiSeedResponse = {
     mean_fitness: number;
     std_fitness: number;
     worst_fitness: number;
+    mean_runtime_ms: number;
+    mean_evaluations: number;
     seeds: number[];
+    population_size: number;
+    generations: number;
+    crossover_probability: number;
+    mutation_probability: number;
   };
-  runs: Array<{ seed: number; fitness: number; weights: number[] }>;
+  runs: Array<{ seed: number; fitness: number; weights: number[]; performance: { runtime_ms: number; evaluations: number } }>;
   best_run: { seed: number; fitness: number; weights: number[] };
 };
 
@@ -94,3 +128,40 @@ export type MembershipFunctions = Record<
     points: Array<Record<string, number>>;
   }
 >;
+
+export type FuzzySensitivityResponse = {
+  variable: string;
+  variable_label: string;
+  interpretation: string;
+  rows: Array<{
+    x: number;
+    variable: string;
+    variable_label: string;
+    multiplier: number;
+    recommended_rate: number;
+    label_pt: string;
+  }>;
+};
+
+export type ParameterSensitivityResponse = {
+  baseline: GeneticParameters;
+  seed: number;
+  rows: Array<{
+    parameter: string;
+    value: number;
+    fitness: number;
+    runtime_ms: number;
+    evaluations: number;
+    population_size: number;
+    generations: number;
+    crossover_probability: number;
+    mutation_probability: number;
+  }>;
+  summary: {
+    count: number;
+    best_parameter: string;
+    best_value: number;
+    best_fitness: number;
+    note: string;
+  };
+};

@@ -1,63 +1,76 @@
-# Decisões técnicas da Sprint 1
+# Decisões técnicas — Sprint 2
 
-## 1. Por que React no frontend?
+## 1. React + FastAPI
 
-React foi escolhido para dar aparência de produto/dashboard sem misturar interface com regra de negócio. Isso facilita:
+A interface foi mantida em React para criar uma experiência mais próxima de produto. Os cálculos permanecem no backend Python porque a parte técnica principal do trabalho envolve fuzzy, simulação, fitness e computação evolutiva.
 
-- evolução visual;
-- organização por componentes;
-- consumo de API;
-- demonstração mais profissional;
-- separação entre produto e motor técnico.
+## 2. Switch Produto / Apresentação
 
-A interface não deve ser o foco principal da avaliação. Ela serve para demonstrar o fluxo e tornar os resultados compreensíveis.
+A decisão de criar dois modos resolve um problema de comunicação:
 
-## 2. Por que FastAPI no backend?
+- o avaliador precisa ver evidências técnicas;
+- um cliente final não deveria ver detalhes excessivos do modelo.
 
-FastAPI foi escolhido porque permite expor o motor fuzzy/evolutivo em endpoints claros, documentados automaticamente em `/docs`. Isso ajuda na demonstração e na reprodutibilidade.
+Por isso:
 
-## 3. Por que manter os cálculos em Python?
+- **Modo Produto** mostra decisão, tarifa e justificativa operacional;
+- **Modo Apresentação** mostra regras, pertinências, centroide, AG, baselines e métricas.
 
-Python é mais adequado para:
+## 3. Modelo fuzzy
 
-- modelagem fuzzy;
-- simulação;
-- algoritmos evolutivos;
-- análise de dados;
-- testes e geração de métricas.
+Foi mantido um modelo Mamdani simplificado com:
 
-Além disso, o projeto inicial já estava em Python, então essa escolha preserva o trabalho já feito.
-
-## 4. Por que Mamdani simplificado?
-
-A lauda da Parte 1 indica Mamdani como modelo padrão nas opções A e B. Por isso, a Sprint 1 usa uma inferência com:
-
-- funções de pertinência nas entradas;
-- consequentes fuzzy na saída;
-- ativação de regras;
-- agregação;
+- fuzzificação das entradas;
+- operador AND por mínimo;
+- peso evolutivo aplicado sobre ativação da regra;
+- implicação por recorte da função de saída;
+- agregação por máximo;
 - defuzzificação por centroide.
 
-O algoritmo ainda é implementado manualmente, para que a equipe consiga explicar cada etapa sem depender de uma biblioteca como caixa-preta.
+A saída continua sendo multiplicador, não preço direto. Isso deixa o produto adaptável a estacionamentos com tarifas-base diferentes.
 
-## 5. Por que otimizar pesos das regras?
+## 4. Pesos das regras como solução evolutiva
 
-É a forma mais segura para uma primeira integração fuzzy-evolutiva:
+A representação do AG é:
 
-- a representação é simples;
-- cada gene tem interpretação clara;
-- a base fuzzy continua legível;
-- o AG altera a influência das regras, mas não destrói a lógica do domínio.
+```text
+[peso_R01, peso_R02, ..., peso_R18]
+```
 
-## 6. Por que usar dados sintéticos?
+Essa escolha foi mantida porque é defensável, simples de explicar e integrada ao modelo fuzzy. Cada gene altera a influência de uma regra no resultado final.
 
-Como provavelmente a equipe ainda não possui dados reais de estacionamento, a Sprint 1 usa dados sintéticos controlados. Isso deve ser declarado no relatório. O objetivo é comparar estratégias sob cenários reprodutíveis, não prometer previsão real de mercado.
+## 5. Fitness com penalidades
 
-## 9. Próxima decisão importante
+A fitness não maximiza apenas receita. Ela considera:
 
-Escolher oficialmente a ampliação obrigatória da equipe de 5 integrantes:
+- receita estimada;
+- penalidade por ocupação muito baixa;
+- penalidade por lotação crítica;
+- penalidade por preço potencialmente injusto;
+- penalidade por baixa rotatividade;
+- penalidade por instabilidade de preço.
 
-- Produto ampliado; ou
-- Análise experimental ampliada.
+Isso reforça a defesa ética do projeto.
 
-A arquitetura permite as duas, mas para o relatório é melhor escolher uma trilha principal e aprofundá-la.
+## 6. Sensibilidade fuzzy
+
+Foi criada análise de sensibilidade para variar uma entrada por vez. Essa evidência ajuda a responder perguntas como:
+
+- o modelo aumenta a tarifa de forma coerente quando a ocupação sobe?
+- evento forte sempre aumenta preço mesmo com vagas?
+- permanência longa influencia a rotatividade?
+
+## 7. Sensibilidade do AG
+
+A análise experimental ampliada varia quatro parâmetros:
+
+- população;
+- gerações;
+- crossover;
+- mutação.
+
+A versão atual varia um parâmetro por vez para manter o tempo de execução adequado à demonstração. Para o relatório final, a equipe pode aumentar repetições e discutir custo computacional.
+
+## 8. Exportação
+
+A exportação foi feita no frontend para não adicionar complexidade desnecessária ao backend. Ela serve para gerar evidências e tabelas para o relatório/slides.
