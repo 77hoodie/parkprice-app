@@ -104,7 +104,32 @@ def run_comparison(scenarios: pd.DataFrame, optimized_rule_weights: Sequence[flo
 
 
 def evaluate_fuzzy_weights(scenarios: pd.DataFrame, rule_weights: Sequence[float]) -> pd.DataFrame:
-    return run_comparison(scenarios, optimized_rule_weights=rule_weights).query("strategy == 'fuzzy_otimizado'").copy()
+    
+    rows = []
+    for _, scenario in scenarios.iterrows():
+        inputs = scenario_to_inputs(scenario)
+        result = recommend_price(inputs, rule_weights=list(rule_weights))
+        price = float(result["recommended_rate"])
+        operation = estimate_operation(
+            price=price,
+            base_rate=inputs.base_rate,
+            occupancy=inputs.occupancy,
+            demand=inputs.demand,
+            event_level=inputs.event_level,
+            avg_stay_minutes=inputs.avg_stay_minutes,
+        )
+        rows.append({
+            "scenario": scenario.get("scenario", "unnamed"),
+            "strategy": "fuzzy_otimizado",
+            "price": round(price, 2),
+            "base_rate": round(inputs.base_rate, 2),
+            "occupancy": inputs.occupancy,
+            "demand": inputs.demand,
+            "event_level": inputs.event_level,
+            "avg_stay_minutes": inputs.avg_stay_minutes,
+            **operation,
+        })
+    return pd.DataFrame(rows)
 
 
 def fitness_for_weights(scenarios: pd.DataFrame, rule_weights: Sequence[float]) -> float:
