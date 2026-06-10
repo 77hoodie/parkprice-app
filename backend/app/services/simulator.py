@@ -106,7 +106,7 @@ def run_comparison(scenarios: pd.DataFrame, optimized_rule_weights: Sequence[flo
 def evaluate_fuzzy_weights(scenarios: pd.DataFrame, rule_weights: Sequence[float]) -> pd.DataFrame:
     
     rows = []
-    for _, scenario in scenarios.iterrows():
+    for _, scenario in scenarios.iterrows(): 
         inputs = scenario_to_inputs(scenario)
         result = recommend_price(inputs, rule_weights=list(rule_weights))
         price = float(result["recommended_rate"])
