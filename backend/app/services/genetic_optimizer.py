@@ -9,7 +9,7 @@ import pandas as pd
 
 from .fuzzy_model import RULES
 from .metrics import dataframe_to_records, summarize_comparison
-from .simulator import fitness_for_weights, run_comparison
+from .simulator import build_scenario_profiles, fast_fitness_for_weights_from_profiles, run_comparison
 
 MIN_WEIGHT = 0.45
 MAX_WEIGHT = 1.75
@@ -23,8 +23,8 @@ def _new_individual(rule_count: int) -> List[float]:
     return [random.uniform(0.75, 1.25) for _ in range(rule_count)]
 
 
-def _evaluate_population(scenarios: pd.DataFrame, population: List[List[float]]) -> List[float]:
-    return [fitness_for_weights(scenarios, individual) for individual in population]
+def _evaluate_population(profiles: Sequence[Dict[str, object]], population: List[List[float]]) -> List[float]:
+    return [fast_fitness_for_weights_from_profiles(profiles, individual) for individual in population]
 
 
 def _tournament_select(population: List[List[float]], fitnesses: List[float], tournament_size: int = 3) -> List[float]:
@@ -78,8 +78,9 @@ def optimize_rule_weights(
     mutation_probability = max(0.0, min(1.0, float(mutation_probability)))
 
     population = [_new_individual(rule_count) for _ in range(population_size)]
+    profiles = build_scenario_profiles(scenarios)
     history: List[Dict[str, float]] = []
-    fitnesses = _evaluate_population(scenarios, population)
+    fitnesses = _evaluate_population(profiles, population)
     evaluation_count = population_size
 
     for generation in range(generations + 1):
@@ -120,7 +121,7 @@ def optimize_rule_weights(
                 next_population.append(child_b)
 
         population = next_population
-        fitnesses = _evaluate_population(scenarios, population)
+        fitnesses = _evaluate_population(profiles, population)
         evaluation_count += population_size
 
     best_index = max(range(len(population)), key=lambda index: fitnesses[index])
@@ -272,6 +273,6 @@ def run_parameter_sensitivity(
             "best_parameter": best["parameter"],
             "best_value": best["value"],
             "best_fitness": best["fitness"],
-            "note": "Estudo de sensibilidade inicial: um parametro variado por vez. Expandir no relatorio final se houver tempo.",
+            "note": "Leitura operacional: cada linha altera um parâmetro por vez para observar impacto em aptidão, tempo e número de avaliações.",
         },
     }

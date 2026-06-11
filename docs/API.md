@@ -1,111 +1,68 @@
-# API — ParkPrice AI Sprint 2
+# API do ParkPrice AI
 
-A API foi implementada em FastAPI e concentra todos os cálculos pesados: inferência fuzzy, simulação, otimização evolutiva e análises experimentais.
+A API concentra os cálculos pesados do sistema: recomendação fuzzy, simulação, otimização evolutiva e análises.
 
-Base local padrão:
+Base local:
 
 ```text
 http://localhost:8000
 ```
 
-Documentação interativa:
-
-```text
-http://localhost:8000/docs
-```
-
-## GET /health
+## `GET /health`
 
 Verifica se a API está ativa.
 
 Resposta esperada:
 
 ```json
-{"status":"ok","sprint":"2"}
-```
-
-## GET /rules
-
-Retorna as 18 regras fuzzy.
-
-Uso na apresentação:
-
-- comprovar base de regras;
-- explicar regras normais, críticas e conflitantes;
-- relacionar regras ativadas com a recomendação.
-
-## GET /membership-functions
-
-Retorna pontos das funções de pertinência para os gráficos.
-
-Variáveis:
-
-- `occupancy`;
-- `demand`;
-- `event`;
-- `stay`;
-- `multiplier`.
-
-## GET /scenarios
-
-Retorna os 12 cenários sintéticos controlados cadastrados em `backend/data/sample_scenarios.csv`.
-
-## POST /recommend
-
-Calcula recomendação fuzzy para uma entrada operacional.
-
-Payload:
-
-```json
 {
-  "base_rate": 8.0,
-  "occupancy": 90,
-  "demand": 8.5,
-  "event_level": 8.0,
-  "avg_stay_minutes": 150
+  "status": "ok",
+  "version": "1.0.0"
 }
 ```
 
-Retorna:
+## `POST /recommend`
+
+Calcula a recomendação de tarifa.
+
+Entrada:
+
+```json
+{
+  "base_rate": 8,
+  "occupancy": 72,
+  "demand": 6.5,
+  "event_level": 4,
+  "avg_stay_minutes": 90
+}
+```
+
+Saídas principais:
 
 - multiplicador;
 - classificação linguística;
 - tarifa recomendada;
-- memberships das entradas;
+- justificativa;
+- graus de pertinência;
 - regras ativadas;
-- curva agregada de saída;
-- explicação em linguagem operacional.
+- curva agregada da saída.
 
-## POST /simulate
+## `POST /simulate`
 
-Compara estratégias em cenários sintéticos.
-
-Payload sem pesos:
-
-```json
-{}
-```
-
-Payload com pesos otimizados:
-
-```json
-{
-  "optimized_rule_weights": [1.0, 1.1, 0.9]
-}
-```
+Compara estratégias nos cenários cadastrados.
 
 Estratégias comparadas:
 
 - tarifa fixa;
 - heurística simples;
 - fuzzy manual;
-- fuzzy otimizado, quando houver pesos.
+- fuzzy otimizado, quando pesos otimizados são informados.
 
-## POST /optimize
+## `POST /optimize`
 
-Executa Algoritmo Genético para otimizar pesos das regras fuzzy.
+Executa o Algoritmo Genético para calibrar pesos das regras fuzzy.
 
-Payload:
+Entrada:
 
 ```json
 {
@@ -117,62 +74,24 @@ Payload:
 }
 ```
 
-Retorna:
+Saídas principais:
 
 - melhor vetor de pesos;
-- melhor fitness;
+- melhor aptidão;
 - histórico de convergência;
-- comparação com fuzzy otimizado;
-- parâmetros usados;
-- desempenho computacional.
+- comparação entre estratégias;
+- tempo de execução;
+- número de avaliações.
 
-## POST /experiments/run-5-seeds
+## `POST /experiments/run-5-seeds`
 
-Executa o AG com pelo menos 5 sementes distintas.
+Executa rodadas independentes usando sementes distintas.
 
-Payload:
+Usado para observar estabilidade do Algoritmo Genético.
 
-```json
-{
-  "population_size": 32,
-  "generations": 30,
-  "seed": 42,
-  "crossover_probability": 0.72,
-  "mutation_probability": 0.28,
-  "seeds": [7, 21, 42, 84, 126]
-}
-```
+## `POST /analysis/fuzzy-sensitivity`
 
-Retorna:
-
-- melhor fitness;
-- média;
-- desvio-padrão;
-- pior fitness;
-- tempo médio;
-- avaliações médias;
-- melhor execução.
-
-## POST /analysis/fuzzy-sensitivity
-
-Varia uma entrada fuzzy por vez e mantém as demais fixas.
-
-Payload:
-
-```json
-{
-  "variable": "occupancy",
-  "steps": 31,
-  "base_input": {
-    "base_rate": 8.0,
-    "occupancy": 72,
-    "demand": 6.5,
-    "event_level": 4,
-    "avg_stay_minutes": 90
-  },
-  "optimized_rule_weights": null
-}
-```
+Varia uma entrada do modelo fuzzy e observa o comportamento do multiplicador.
 
 Variáveis aceitas:
 
@@ -181,33 +100,23 @@ Variáveis aceitas:
 - `event_level`;
 - `avg_stay_minutes`.
 
-Uso na apresentação:
+## `POST /analysis/parameter-sensitivity`
 
-- demonstrar sensibilidade;
-- explicar coerência da resposta fuzzy;
-- discutir limites do modelo.
+Compara configurações do otimizador variando:
 
-## POST /analysis/parameter-sensitivity
+- tamanho da população;
+- número de gerações;
+- probabilidade de crossover;
+- probabilidade de mutação.
 
-Executa estudo experimental inicial variando quatro parâmetros do AG.
+## `GET /rules`
 
-Payload:
+Retorna a base de regras fuzzy.
 
-```json
-{
-  "seed": 42,
-  "baseline_population_size": 24,
-  "baseline_generations": 18,
-  "baseline_crossover_probability": 0.72,
-  "baseline_mutation_probability": 0.28
-}
-```
+## `GET /membership-functions`
 
-Parâmetros avaliados:
+Retorna pontos para plotar as funções de pertinência.
 
-- população;
-- gerações;
-- crossover;
-- mutação.
+## `GET /scenarios`
 
-Retorna fitness, tempo e avaliações para cada variação.
+Retorna os cenários sintéticos controlados usados na simulação.

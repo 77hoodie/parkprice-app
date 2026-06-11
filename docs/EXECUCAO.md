@@ -1,11 +1,28 @@
-# Guia de execução — Sprint 2
+# Guia de execução
 
-## 1. Backend
+Este guia descreve como executar o ParkPrice AI localmente.
+
+## Requisitos
+
+- Python 3.10 ou superior.
+- Node.js 18 ou superior.
+- npm.
+
+## 1. Executar API
+
+Entre na pasta do backend:
 
 ```bash
 cd backend
+```
+
+Crie um ambiente virtual:
+
+```bash
 python -m venv .venv
 ```
+
+Ative o ambiente:
 
 Windows:
 
@@ -19,66 +36,84 @@ Linux/macOS:
 source .venv/bin/activate
 ```
 
-Instalar dependências:
+Instale as dependências:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Rodar API:
+Inicie a API:
 
 ```bash
 uvicorn app.main:app --reload
 ```
 
-URLs:
+Endereços úteis:
 
 ```text
-API:  http://localhost:8000
-Docs: http://localhost:8000/docs
+API: http://localhost:8000
+Swagger: http://localhost:8000/docs
+Health check: http://localhost:8000/health
 ```
 
-Teste:
+## 2. Executar interface
 
-```bash
-curl http://localhost:8000/health
-```
-
-## 2. Frontend
-
-Em outro terminal:
+Em outro terminal, entre na pasta do frontend:
 
 ```bash
 cd frontend
+```
+
+Instale dependências:
+
+```bash
 npm install
+```
+
+Rode o servidor de desenvolvimento:
+
+```bash
 npm run dev
 ```
 
-URL:
+Abra:
 
 ```text
 http://localhost:5173
 ```
 
-Caso a API esteja em outro endereço:
+## 3. Perfis de acesso
 
-```bash
-cd frontend
-```
+A tela inicial oferece dois perfis:
 
-Criar `.env.local`:
+- **Cliente:** fluxo comercial e operacional.
+- **Administrador:** recursos avançados de modelo, otimização e análise.
 
-```env
-VITE_API_URL=http://localhost:8000
-```
+Não há senha real. O objetivo é separar a experiência por ator de uso.
 
-## 3. Testes
+## 4. Roteiro rápido de verificação
+
+1. Abra a interface.
+2. Entre como Cliente.
+3. Acesse Recomendação.
+4. Clique no preset “Quase lotado”.
+5. Confira tarifa, multiplicador e justificativa.
+6. Acesse Simulação.
+7. Atualize a simulação e veja a comparação de estratégias.
+8. Acesse Histórico e confira o registro da recomendação.
+9. Saia e entre como Administrador.
+10. Abra Modelo e confira pertinências e regras.
+11. Abra Otimização e execute a calibração.
+12. Rode execuções independentes.
+13. Abra Análises e execute sensibilidade do modelo e do otimizador.
+
+## 5. Testes
 
 Backend:
 
 ```bash
 cd backend
-pytest
+python -m pytest -q
 ```
 
 Frontend:
@@ -88,36 +123,42 @@ cd frontend
 npm run build
 ```
 
-## 4. Fluxo recomendado para testar manualmente
+Resultados validados:
 
-1. Rodar backend.
-2. Rodar frontend.
+```text
+Backend: 7 passed
+Frontend: build concluído com sucesso
+```
+
+## Acesso ao sistema
+
+A aplicação possui uma página de login com duas contas de teste:
+
+| Perfil | E-mail | Senha |
+|---|---|---|
+| Cliente | `cliente@parkprice.ai` | `cliente123` |
+| Administrador | `admin@parkprice.ai` | `admin123` |
+
+Também é possível cadastrar novos clientes pela própria tela de acesso. O cadastro exige e-mail válido, senha com pelo menos 8 caracteres, confirmação de senha e aceite do aviso de tratamento local de dados.
+
+### Observação sobre dados cadastrados
+
+Os clientes cadastrados são salvos somente no `localStorage` do navegador usado na demonstração. A senha informada é convertida em hash SHA-256 antes de ser armazenada. Nenhum cadastro de cliente é enviado para a API Python.
+
+Esse comportamento é intencional para manter o escopo do trabalho: a autenticação organiza os atores e melhora a experiência de produto, sem transformar o sistema em uma plataforma comercial completa.
+
+## Fluxo recomendado para demonstração rápida
+
+1. Iniciar backend com `uvicorn app.main:app --reload`.
+2. Iniciar frontend com `npm run dev`.
 3. Abrir `http://localhost:5173`.
-4. Confirmar que o modo inicial é **Produto**.
-5. Clicar em preset **Quase lotado**.
-6. Conferir tarifa final, multiplicador e justificativa.
-7. Alternar para **Modo Apresentação**.
-8. Abrir **Modelo fuzzy** e verificar gráficos e regras.
-9. Abrir **Simulação** e rodar comparação.
-10. Abrir **Evolutivo** e executar AG.
-11. Rodar 5 sementes.
-12. Abrir **Experimentos** e executar sensibilidade fuzzy e do AG.
-13. Testar exportações JSON/CSV.
+4. Entrar como cliente usando `cliente@parkprice.ai` e `cliente123`.
+5. Abrir **Recomendação** e usar os cenários rápidos.
+6. Ler a justificativa e o guia operacional do cliente.
+7. Abrir **Simulação**, atualizar o gráfico e ler a análise.
+8. Sair e entrar como administrador usando `admin@parkprice.ai` e `admin123`.
+9. Abrir **Modelo** para mostrar pertinências e regras.
+10. Abrir **Otimização** para executar a calibração e as 5 execuções independentes.
+11. Abrir **Análises** para rodar sensibilidade do modelo e sensibilidade dos parâmetros do otimizador.
 
-## 5. Problemas comuns
-
-### Frontend não conecta na API
-
-Verifique se o backend está rodando em `http://localhost:8000`. Se estiver em outra porta, configure `frontend/.env.local`.
-
-### Erro de CORS
-
-A API já permite `http://localhost:5173` e `http://127.0.0.1:5173`. Se usar outra porta, adicione em `backend/app/main.py`.
-
-### `npm run build` mostra aviso de bundle grande
-
-É um aviso do Vite por causa de gráficos e ícones. Não impede execução.
-
-### O AG demora
-
-Reduza população e gerações na interface. Para demonstração rápida, use população 16 e gerações 10.
+As rotinas de otimização foram ajustadas para demonstração ao vivo e devem executar rapidamente.

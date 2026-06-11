@@ -1,92 +1,80 @@
-# ParkPrice AI — Sprint 2
+# ParkPrice AI
 
-Sistema fuzzy-evolutivo para apoio à decisão em precificação dinâmica de estacionamentos.
+Sistema web de apoio à decisão para precificação dinâmica de estacionamentos. A aplicação combina uma interface React com uma API Python/FastAPI responsável pelos cálculos de lógica fuzzy, simulação de cenários e calibração por Algoritmo Genético.
 
-A Sprint 2 evolui a base da Sprint 1 para um protótipo acadêmico mais organizado para demonstração: a interface ganhou alternância entre **Modo Produto** e **Modo Apresentação**, enquanto a API Python recebeu endpoints de análise de sensibilidade, parâmetros editáveis do Algoritmo Genético e evidências experimentais mais fortes.
+A experiência foi organizada em dois perfis de acesso:
 
-> A interface existe para demonstrar o produto com clareza. O foco avaliativo continua sendo: modelagem fuzzy, motor evolutivo, validação, comparação, documentação, reprodutibilidade e domínio técnico da equipe.
+- **Cliente:** visão operacional, focada em informar o cenário do estacionamento, receber a tarifa recomendada, simular estratégias e exportar resultados.
+- **Administrador:** visão avançada, com regras fuzzy, funções de pertinência, otimização evolutiva, análises de sensibilidade, execuções independentes e métricas de comparação.
 
----
+O acesso usa autenticação demonstrativa local para separar fluxos de uso. Há duas contas de teste e novos clientes podem ser cadastrados com validação de e-mail, senha mínima e ciência sobre tratamento local de dados. A senha cadastrada é convertida em hash SHA-256 antes de ser salva no navegador; não há envio desses dados para a API.
 
-## 1. Principais entregas da Sprint 2
+## Recursos principais
 
-- Switch **Modo Produto / Modo Apresentação**.
-- Presets de demonstração: dia fraco, dia comum, pico moderado, quase lotado, evento com vagas e conflito operacional.
-- Dashboard mais profissional e organizado com abas por contexto.
-- Parâmetros editáveis do AG: população, gerações, seed, crossover e mutação.
-- Métricas de custo computacional: tempo de execução e número de avaliações.
-- Análise de sensibilidade fuzzy variando uma entrada por vez.
-- Análise experimental ampliada variando quatro parâmetros do AG.
-- Exportação de resultados em JSON/CSV diretamente pela interface.
-- Documentação nova da Sprint 2.
-- Limpeza recomendada de entrega: `.git/`, `.venv/`, `node_modules/` e `dist/` não devem ir para o GitHub.
+- Interface web em React, Vite e TypeScript.
+- API em Python com FastAPI.
+- Modelo fuzzy Mamdani com 4 entradas, 1 saída e 18 regras.
+- Defuzzificação por centroide.
+- 12 cenários sintéticos controlados.
+- Comparação entre tarifa fixa, heurística simples, fuzzy manual e fuzzy otimizado.
+- Algoritmo Genético para calibração dos pesos das regras fuzzy.
+- Parâmetros editáveis: população, gerações, seed, crossover e mutação.
+- Execuções independentes com sementes distintas.
+- Análise de sensibilidade do modelo fuzzy.
+- Análise de sensibilidade dos parâmetros do otimizador.
+- Exportação de recomendação, simulação, histórico e análises.
+- Login local com contas de teste, cadastro de cliente, validação de e-mail/senha e aviso de tratamento de dados.
+- Otimização evolutiva acelerada para demonstração, mantendo a comparação final no fluxo completo do sistema.
 
----
-
-## 2. Estrutura do projeto
+## Estrutura
 
 ```text
-parkprice-ai-sprint2/
+parkprice-app/
 ├── backend/
 │   ├── app/
-│   │   ├── main.py                  # API FastAPI
-│   │   ├── schemas.py               # Validação dos payloads
+│   │   ├── main.py
+│   │   ├── schemas.py
 │   │   └── services/
-│   │       ├── fuzzy_model.py        # Modelo fuzzy Mamdani simplificado
-│   │       ├── simulator.py          # Cenários, baselines e fitness
-│   │       ├── genetic_optimizer.py  # Algoritmo Genético e sensibilidade do AG
-│   │       ├── sensitivity.py        # Sensibilidade fuzzy
-│   │       └── metrics.py            # Métricas e resumos
+│   │       ├── fuzzy_model.py
+│   │       ├── genetic_optimizer.py
+│   │       ├── simulator.py
+│   │       ├── sensitivity.py
+│   │       └── metrics.py
 │   ├── data/
-│   │   └── sample_scenarios.csv      # 12 cenários sintéticos controlados
+│   │   └── sample_scenarios.csv
 │   ├── tests/
 │   └── requirements.txt
-│
 ├── frontend/
 │   ├── src/
-│   │   ├── components/              # Componentes visuais
-│   │   ├── services/api.ts           # Cliente da API
-│   │   ├── App.tsx                   # Interface principal com switch de modo
-│   │   ├── styles.css                # Paleta preto/branco/cinza
+│   │   ├── components/
+│   │   ├── services/
+│   │   ├── App.tsx
+│   │   ├── styles.css
 │   │   └── types.ts
 │   ├── package.json
 │   └── vite.config.ts
-│
 ├── docs/
-│   ├── ALINHAMENTO_LAUDA_E_GUIA.md
-│   ├── API.md
-│   ├── DECISOES_TECNICAS.md
-│   ├── EXECUCAO.md
-│   ├── ROTEIRO_DE_ESTUDO.md
-│   ├── SPRINT_1.md
-│   └── SPRINT_2.md
-│
-├── assets/
 ├── results/
-├── .gitignore
 └── README.md
 ```
 
----
+## Como executar
 
-## 3. Pré-requisitos
+### 1. API Python
 
-Instale antes de executar:
-
-- Python 3.11 ou superior
-- Node.js 20 ou superior
-- npm 10 ou superior
-
----
-
-## 4. Como executar o backend
-
-A partir da raiz do projeto:
+Entre na pasta do backend:
 
 ```bash
 cd backend
+```
+
+Crie o ambiente virtual:
+
+```bash
 python -m venv .venv
 ```
+
+Ative o ambiente:
 
 Windows:
 
@@ -106,135 +94,90 @@ Instale as dependências:
 pip install -r requirements.txt
 ```
 
-Execute a API:
+Inicie a API:
 
 ```bash
 uvicorn app.main:app --reload
 ```
 
-A API ficará disponível em:
-
-```text
-http://localhost:8000
-```
-
-Documentação interativa:
+A documentação interativa da API ficará disponível em:
 
 ```text
 http://localhost:8000/docs
 ```
 
-Teste rápido:
+### 2. Interface web
 
-```bash
-curl http://localhost:8000/health
-```
-
-Resposta esperada:
-
-```json
-{"status":"ok","sprint":"2"}
-```
-
----
-
-## 5. Como executar o frontend
-
-Em outro terminal, a partir da raiz:
+Abra outro terminal e entre na pasta do frontend:
 
 ```bash
 cd frontend
+```
+
+Instale as dependências:
+
+```bash
 npm install
+```
+
+Inicie a interface:
+
+```bash
 npm run dev
 ```
 
-A interface ficará disponível em:
+A aplicação ficará disponível em:
 
 ```text
 http://localhost:5173
 ```
 
-Se a API estiver em outro endereço, crie `frontend/.env.local`:
+## Fluxo sugerido de uso
 
-```env
-VITE_API_URL=http://localhost:8000
-```
+1. Entrar com uma das contas de teste:
+   - Cliente: `cliente@parkprice.ai` / `cliente123`
+   - Administrador: `admin@parkprice.ai` / `admin123`
+2. Opcionalmente, cadastrar um novo cliente com e-mail e senha.
+3. Entrar como **Cliente**.
+4. Usar os cenários rápidos em **Recomendação**.
+5. Conferir a tarifa recomendada, multiplicador, justificativa operacional e guia de interpretação.
+6. Abrir **Simulação** para comparar estratégias e ler a análise do gráfico.
+7. Sair e entrar como **Administrador**.
+8. Abrir **Modelo** para ver pertinências e regras.
+9. Abrir **Otimização** e executar a calibração por Algoritmo Genético.
+10. Rodar execuções independentes.
+11. Abrir **Análises** e executar sensibilidade do modelo e do otimizador.
+12. Exportar resultados em JSON ou CSV quando necessário.
 
----
+## Testes
 
-## 6. Como rodar os testes
-
-Backend:
+Na pasta `backend`, execute:
 
 ```bash
-cd backend
-pytest
+python -m pytest -q
 ```
 
-Build do frontend:
+Resultado validado nesta versão:
+
+```text
+7 passed
+```
+
+Na pasta `frontend`, execute:
 
 ```bash
-cd frontend
 npm run build
 ```
 
-Validação feita nesta Sprint 2:
+Resultado validado nesta versão: build concluído com sucesso. O Vite pode emitir aviso de bundle grande por causa da biblioteca de gráficos, mas isso não impede a execução.
 
-```text
-Backend: 7 passed
-Frontend: build concluído com sucesso
-```
+## Documentação adicional
 
-O build pode avisar que o bundle JavaScript ficou acima de 500 kB por causa de gráficos e bibliotecas de UI. Isso não impede execução; é apenas um aviso de otimização futura.
-
----
-
-## 7. Fluxo de demonstração sugerido
-
-1. Abrir a interface em **Modo Produto**.
-2. Explicar problema, público-alvo e decisão apoiada.
-3. Usar um preset, por exemplo **Quase lotado**.
-4. Mostrar tarifa recomendada, multiplicador e justificativa operacional.
-5. Alternar para **Modo Apresentação**.
-6. Mostrar regras ativadas, funções de pertinência e saída agregada.
-7. Rodar simulação e comparação de estratégias.
-8. Rodar AG com parâmetros editáveis.
-9. Rodar 5 sementes e explicar estabilidade.
-10. Abrir Experimentos e mostrar sensibilidade fuzzy e sensibilidade dos parâmetros do AG.
-
----
-
-## 8. Endpoints principais
-
-```text
-GET  /health
-GET  /rules
-GET  /membership-functions
-GET  /scenarios
-POST /recommend
-POST /simulate
-POST /optimize
-POST /experiments/run-5-seeds
-POST /analysis/fuzzy-sensitivity
-POST /analysis/parameter-sensitivity
-```
-
-Detalhes em `docs/API.md`.
-
----
-
-## 9. O que ainda falta para a versão final
-
-- Revisar texto final do relatório PDF.
-- Adicionar declaração formal de uso de IA.
-- Tirar prints ou gerar evidências visuais para o relatório.
-- Definir divisão de fala entre os 5 integrantes.
-- Se houver tempo, persistir histórico de experimentos em arquivo ou banco simples.
-- Se houver tempo, permitir upload de cenários CSV pela interface.
-- Verificar com o professor se a equipe de 5 já tem autorização formal.
-
----
-
-## 10. Observação acadêmica importante
-
-Os dados de receita, ocupação prevista e rotatividade são **sintéticos controlados**. Eles servem para comparar estratégias sob hipóteses iguais, não para prever receita real de um estacionamento específico.
+- `docs/ALTERACOES_WEB_APP.md`: resumo das mudanças finais da interface.
+- `docs/EXECUCAO.md`: passo a passo completo de instalação e uso.
+- `docs/API.md`: endpoints principais da API.
+- `docs/DECISOES_TECNICAS.md`: justificativas de arquitetura e modelagem.
+- `docs/ALINHAMENTO_LAUDA_E_GUIA.md`: conferência de aderência às atividades.
+- `docs/ROTEIRO_OPERACIONAL_DEMO.md`: roteiro de demonstração no dia.
+- `docs/CHECKLIST_FINAL.md`: lista de verificação antes da submissão.
+- `docs/DECLARACAO_USO_IA_MODELO.md`: modelo inicial para declaração de uso de IA.

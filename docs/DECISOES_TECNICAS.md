@@ -1,76 +1,125 @@
-# Decisões técnicas — Sprint 2
+# Decisões técnicas
 
-## 1. React + FastAPI
+## 1. Arquitetura
 
-A interface foi mantida em React para criar uma experiência mais próxima de produto. Os cálculos permanecem no backend Python porque a parte técnica principal do trabalho envolve fuzzy, simulação, fitness e computação evolutiva.
+A aplicação foi separada em duas camadas:
 
-## 2. Switch Produto / Apresentação
+- **Frontend React:** experiência visual, fluxo por perfil, gráficos e exportações.
+- **Backend FastAPI:** cálculos fuzzy, simulação, Algoritmo Genético e análises.
 
-A decisão de criar dois modos resolve um problema de comunicação:
+Essa separação evita que a interface fique responsável por cálculos pesados e permite que o motor matemático seja testado de forma independente.
 
-- o avaliador precisa ver evidências técnicas;
-- um cliente final não deveria ver detalhes excessivos do modelo.
+## 2. Perfis de uso
 
-Por isso:
+Foram definidos dois atores:
 
-- **Modo Produto** mostra decisão, tarifa e justificativa operacional;
-- **Modo Apresentação** mostra regras, pertinências, centroide, AG, baselines e métricas.
+- **Cliente:** operador ou gestor que quer obter recomendações de preço.
+- **Administrador:** responsável por acompanhar regras, calibração, métricas e análises.
+
+A separação melhora a organização da interface e simula um produto com diferentes níveis de acesso, sem exigir autenticação completa.
 
 ## 3. Modelo fuzzy
 
-Foi mantido um modelo Mamdani simplificado com:
+O sistema usa abordagem Mamdani porque a atividade da Parte 1, na Opção B, usa Mamdani como padrão quando a equipe não escolhe TSK.
 
-- fuzzificação das entradas;
-- operador AND por mínimo;
-- peso evolutivo aplicado sobre ativação da regra;
-- implicação por recorte da função de saída;
-- agregação por máximo;
-- defuzzificação por centroide.
+Entradas:
 
-A saída continua sendo multiplicador, não preço direto. Isso deixa o produto adaptável a estacionamentos com tarifas-base diferentes.
+- ocupação atual;
+- demanda prevista;
+- proximidade de evento/pico;
+- tempo médio de permanência.
 
-## 4. Pesos das regras como solução evolutiva
+Saída:
 
-A representação do AG é:
+- multiplicador da tarifa-base.
+
+O preço final é calculado por:
+
+```text
+preço_final = tarifa_base × multiplicador
+```
+
+## 4. Base de regras
+
+A base possui 18 regras para cobrir:
+
+- dias fracos;
+- dias comuns;
+- picos moderados;
+- cenários quase lotados;
+- eventos com vagas disponíveis;
+- conflitos operacionais.
+
+## 5. Defuzzificação
+
+A saída fuzzy é agregada e convertida em valor numérico por centroide. Isso permite gerar um multiplicador contínuo, mais adequado que uma decisão rígida por faixas.
+
+## 6. Algoritmo Genético
+
+O Algoritmo Genético calibra pesos das regras fuzzy.
+
+Representação:
 
 ```text
 [peso_R01, peso_R02, ..., peso_R18]
 ```
 
-Essa escolha foi mantida porque é defensável, simples de explicar e integrada ao modelo fuzzy. Cada gene altera a influência de uma regra no resultado final.
+Operadores:
 
-## 5. Fitness com penalidades
+- seleção por torneio;
+- crossover blend;
+- mutação gaussiana;
+- elitismo preservando o melhor indivíduo.
 
-A fitness não maximiza apenas receita. Ela considera:
+## 7. Função de aptidão
+
+A aptidão combina receita estimada e penalidades operacionais. A intenção é evitar que o sistema otimize apenas preço alto.
+
+Componentes considerados:
 
 - receita estimada;
-- penalidade por ocupação muito baixa;
-- penalidade por lotação crítica;
-- penalidade por preço potencialmente injusto;
-- penalidade por baixa rotatividade;
-- penalidade por instabilidade de preço.
+- ocupação prevista;
+- penalidade por preço excessivo;
+- penalidade por ocupação extrema;
+- rotatividade.
 
-Isso reforça a defesa ética do projeto.
+## 8. Simulação
 
-## 6. Sensibilidade fuzzy
+Foram usados cenários sintéticos controlados, com valores realistas e interpretáveis. Eles permitem comparar estratégias sob as mesmas condições.
 
-Foi criada análise de sensibilidade para variar uma entrada por vez. Essa evidência ajuda a responder perguntas como:
+## 9. Métricas
 
-- o modelo aumenta a tarifa de forma coerente quando a ocupação sobe?
-- evento forte sempre aumenta preço mesmo com vagas?
-- permanência longa influencia a rotatividade?
+A aplicação registra:
 
-## 7. Sensibilidade do AG
+- melhor aptidão;
+- aptidão média;
+- pior aptidão;
+- tempo de execução;
+- número de avaliações;
+- melhor, média e desvio-padrão em execuções independentes;
+- comparação de receita entre estratégias.
 
-A análise experimental ampliada varia quatro parâmetros:
+## Autenticação demonstrativa local
 
-- população;
-- gerações;
-- crossover;
-- mutação.
+A interface passou a ter login com dois tipos de usuário: Cliente e Administrador. Essa decisão melhora a separação de responsabilidades:
 
-A versão atual varia um parâmetro por vez para manter o tempo de execução adequado à demonstração. Para o relatório final, a equipe pode aumentar repetições e discutir custo computacional.
+- o Cliente recebe uma visão operacional e guiada;
+- o Administrador acessa transparência do modelo, regras, otimização e análises.
 
-## 8. Exportação
+Foram incluídas duas contas de teste e cadastro local de novos clientes. O cadastro valida e-mail, exige senha mínima, confirmação e aceite de tratamento local. A senha é salva como hash SHA-256 no navegador, e não em texto puro.
 
-A exportação foi feita no frontend para não adicionar complexidade desnecessária ao backend. Ela serve para gerar evidências e tabelas para o relatório/slides.
+Essa autenticação não é apresentada como recurso de segurança empresarial completo. Ela serve para organizar o fluxo do produto dentro do escopo acadêmico, sem prometer uma plataforma comercial final.
+
+## Aceleração da otimização evolutiva
+
+A versão anterior executava a função de aptidão chamando o fluxo completo de recomendação para cada indivíduo do Algoritmo Genético. Isso era tecnicamente correto, mas muito lento para demonstração ao vivo, especialmente em análise de parâmetros e execuções independentes.
+
+A solução adotada foi:
+
+1. manter a recomendação exibida ao usuário com o modelo fuzzy Mamdani completo;
+2. pré-calcular as curvas de saída fuzzy;
+3. pré-calcular as ativações puras das regras nos cenários sintéticos;
+4. usar uma avaliação rápida da aptidão durante a busca evolutiva;
+5. após encontrar o melhor vetor de pesos, comparar os resultados pelo fluxo completo de simulação.
+
+Essa abordagem preserva os elementos cobrados na atividade de IA Evolutiva: representação, população, função de aptidão, operadores, parâmetros, convergência, 5 sementes, comparação e métricas. Ao mesmo tempo, torna a demonstração viável em sala.

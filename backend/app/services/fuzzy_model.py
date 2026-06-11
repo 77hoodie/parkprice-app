@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from functools import lru_cache
 from typing import Dict, List, Sequence
 
 import numpy as np
@@ -156,6 +157,17 @@ def output_membership(term: str, multiplier: float) -> float:
     return membership_value("multiplier", term, multiplier)
 
 
+@lru_cache(maxsize=1)
+def output_universe_and_curves() -> tuple[np.ndarray, Dict[str, np.ndarray]]:
+    """Precalcula as curvas de saida para acelerar recomendacoes e otimizacoes."""
+    universe = np.linspace(0.70, 1.80, 221)
+    curves = {
+        label: np.array([output_membership(label, float(x)) for x in universe])
+        for label in OUTPUT_CENTERS
+    }
+    return universe, curves
+
+
 def classify_multiplier(multiplier: float) -> str:
     return min(OUTPUT_CENTERS, key=lambda label: abs(OUTPUT_CENTERS[label] - multiplier))
 
@@ -176,7 +188,7 @@ def infer_multiplier(inputs: ParkingInputs, rule_weights: Sequence[float] | None
     if len(weights) != len(RULES):
         raise ValueError(f"Expected {len(RULES)} rule weights, received {len(weights)}.")
 
-    universe = np.linspace(0.70, 1.80, 221)
+    universe, output_curves = output_universe_and_curves()
     aggregated = np.zeros_like(universe)
     activations: List[Dict[str, object]] = []
 
@@ -188,7 +200,7 @@ def infer_multiplier(inputs: ParkingInputs, rule_weights: Sequence[float] | None
         output_label = str(rule["then"])
 
         if weighted_activation > 0:
-            output_curve = np.array([output_membership(output_label, float(x)) for x in universe])
+            output_curve = output_curves[output_label]
             aggregated = np.maximum(aggregated, np.minimum(weighted_activation, output_curve))
 
         activations.append(

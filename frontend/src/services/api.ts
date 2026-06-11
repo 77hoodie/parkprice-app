@@ -32,7 +32,7 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 }
 
 export const api = {
-  health: () => request<{ status: string; sprint: string }>('/health'),
+  health: () => request<{ status: string; version: string }>('/health'),
   recommend: (payload: ParkingInputPayload) =>
     request<Recommendation>('/recommend', {
       method: 'POST',

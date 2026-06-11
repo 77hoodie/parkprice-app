@@ -19,7 +19,7 @@ from .services.simulator import load_scenarios, run_comparison
 
 app = FastAPI(
     title="ParkPrice AI API",
-    version="0.2.0-sprint2",
+    version="1.0.0",
     description="API Python para recomendacao fuzzy-evolutiva de tarifa dinamica em estacionamentos.",
 )
 
@@ -36,21 +36,21 @@ app.add_middleware(
 def root() -> dict:
     return {
         "project": "ParkPrice AI",
-        "sprint": "Sprint 2",
+        "version": "1.0.0",
         "status": "running",
         "docs": "/docs",
-        "highlights": [
-            "modo produto/apresentacao no frontend",
-            "parametros editaveis do AG",
-            "analise de sensibilidade fuzzy",
-            "analise experimental de 4 parametros evolutivos",
+        "capabilities": [
+            "recomendacao fuzzy Mamdani",
+            "comparacao de estrategias de preco",
+            "calibracao por Algoritmo Genetico",
+            "analises de sensibilidade e estabilidade",
         ],
     }
 
 
 @app.get("/health")
 def health() -> dict:
-    return {"status": "ok", "sprint": "2"}
+    return {"status": "ok", "version": "1.0.0"}
 
 
 @app.get("/rules")
