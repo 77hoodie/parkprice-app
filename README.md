@@ -210,11 +210,71 @@ Resultado validado nesta versão: build concluído com sucesso. O Vite pode emit
 
 ## Declaração de uso de IA
 
-A equipe utilizou ferramentas de IA generativa como apoio ao desenvolvimento, organização e revisão do projeto ParkPrice AI.
+A equipe utilizou ferramentas de IA generativa como apoio ao desenvolvimento, organização e revisão do projeto ParkPrice AI. Declaramos
+que todo material gerado por inteligência artificial foi revisado, executado e validado
+antes de ir para produção.
 
 | Ferramenta | Finalidade | Prompt/comando resumido | Revisão crítica da equipe |
 |---|---|---|---|
-| ChatGPT | Apoio na estruturação do projeto, documentação, sugestões de arquitetura, revisão de requisitos, organização de roteiro e geração inicial de trechos de código. | Solicitações sobre arquitetura React + FastAPI, modelagem fuzzy, Algoritmo Genético, documentação e preparação de apresentação. | A equipe revisou, executou, testou, ajustou e assumiu responsabilidade pelo conteúdo final. |
-| Assistente de código/editor, se usado | Apoio à escrita e correção de código. | Autocomplete, refatoração e depuração. | Código executado localmente e confrontado com o comportamento esperado. |
+| ChatGPT 5.5 e Claude | Apoiar a
+estruturação do
+projeto em termos
+de código e ideias,
+apoiar a
+estruturação da
+documentação do
+produto e
+estruturação da
+apresentação. Por
+fim, solicitamos
+uma análise do
+projeto para
+verificar se estava
+de acordo com
+ambas as laudas. | "Analise essas
+laudas e dê ideias
+de projetos
+considerando a
+opção B e a lauda
+opção 2”,
+“Considerando que
+vamos fazer uma
+aplicação web, faça
+um esboço inicial
+que siga nossa
+ideia e esteja
+alinhado com a
+teoria”, “Otimize as
+funções da
+aplicação e a
+interface”,
+“Estruture melhor
+as justificativas”,
+“Estruture uma
+parte inicial da
+documentação do
+produto”.
+ | Para a geração de
+ideias, ideias muito
+simples foram
+descartadas. A
+interface da
+aplicação também
+foi revisada e
+passou por
+mudanças. As
+funções que antes
+demoravam muito
+para executar na
+API foram
+otimizadas, e várias
+justificativas foram
+colocadas no site.
+Detalhes visuais e
+gramáticos também
+foram descartados
+ou revisados para
+melhor navegação
+no site. |
 
 A IA foi usada como ferramenta de apoio. As decisões finais de modelagem, validação, execução, interpretação dos resultados e apresentação são de responsabilidade da equipe.
