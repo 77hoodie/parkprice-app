@@ -9,6 +9,20 @@ A experiência foi organizada em dois perfis de acesso:
 
 O acesso usa autenticação demonstrativa local para separar fluxos de uso. Há duas contas de teste e novos clientes podem ser cadastrados com validação de e-mail, senha mínima e ciência sobre tratamento local de dados. A senha cadastrada é convertida em hash SHA-256 antes de ser salva no navegador; não há envio desses dados para a API.
 
+
+## Identificação do projeto
+
+| Campo | Informação |
+|---|---|
+| Instituição | CESUPA - Escola de Negócios, Tecnologia e Inovação |
+| Disciplina | Inteligência Artificial e Computacional |
+| Professor | Daniel Leal Souza |
+| Turma | CC5MA |
+| Equipe | João Pedro Almeida Follmann; Yuri Antonio Santos Fernandes; Samuel Paula Nunes Salheb; Arthur José Aviz Lima; Gabriel Cruz Filgueira |
+| Parte 1 | Sistemas de Controle Fuzzy — Opção B: aplicação ou produto baseado em controle fuzzy |
+| Parte 2 | IA Evolutiva e Computação Bioinspirada — Opção 2: protótipo de programa com Algoritmo Genético |
+| Repositório | https://github.com/77hoodie/parkprice-app |
+
 ## Recursos principais
 
 - Interface web em React, Vite e TypeScript.
@@ -54,9 +68,15 @@ parkprice-app/
 │   ├── package.json
 │   └── vite.config.ts
 ├── docs/
+├── relatorio/
+│   └── Documentacao_ParkPrice_AI.pdf
+├── slides/
+│   └── slides_parkprice_ai.pdf
 ├── results/
 └── README.md
 ```
+
+A pasta `relatorio/` contém a documentação técnica de produto em PDF. A pasta `slides/` contém a apresentação em PDF usada como apoio visual para a demonstração.
 
 ## Como executar
 
@@ -149,6 +169,12 @@ http://localhost:5173
 11. Abrir **Análises** e executar sensibilidade do modelo e do otimizador.
 12. Exportar resultados em JSON ou CSV quando necessário.
 
+## Arquivos finais incluídos
+
+- `relatorio/Documentacao_ParkPrice_AI.pdf`: documentação técnica de produto e validação fuzzy-evolutiva.
+- `slides/slides_parkprice_ai.pdf`: apresentação visual do ParkPrice AI para apoio à demonstração.
+- `README.md`: guia de execução, identificação da equipe, contas de teste, estrutura do projeto e declaração de uso de IA.
+
 ## Testes
 
 Na pasta `backend`, execute:
@@ -181,3 +207,14 @@ Resultado validado nesta versão: build concluído com sucesso. O Vite pode emit
 - `docs/ROTEIRO_OPERACIONAL_DEMO.md`: roteiro de demonstração no dia.
 - `docs/CHECKLIST_FINAL.md`: lista de verificação antes da submissão.
 - `docs/DECLARACAO_USO_IA_MODELO.md`: modelo inicial para declaração de uso de IA.
+
+## Declaração de uso de IA
+
+A equipe utilizou ferramentas de IA generativa como apoio ao desenvolvimento, organização e revisão do projeto ParkPrice AI.
+
+| Ferramenta | Finalidade | Prompt/comando resumido | Revisão crítica da equipe |
+|---|---|---|---|
+| ChatGPT | Apoio na estruturação do projeto, documentação, sugestões de arquitetura, revisão de requisitos, organização de roteiro e geração inicial de trechos de código. | Solicitações sobre arquitetura React + FastAPI, modelagem fuzzy, Algoritmo Genético, documentação e preparação de apresentação. | A equipe revisou, executou, testou, ajustou e assumiu responsabilidade pelo conteúdo final. |
+| Assistente de código/editor, se usado | Apoio à escrita e correção de código. | Autocomplete, refatoração e depuração. | Código executado localmente e confrontado com o comportamento esperado. |
+
+A IA foi usada como ferramenta de apoio. As decisões finais de modelagem, validação, execução, interpretação dos resultados e apresentação são de responsabilidade da equipe.

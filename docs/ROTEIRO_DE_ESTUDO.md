@@ -119,7 +119,7 @@ Os pesos das regras fuzzy.
 
 ### Por que não otimizar tudo?
 
-Porque a Sprint atual prioriza uma representação simples, explicável e defensável. Ajustar limites de pertinência pode ser melhoria futura.
+Porque a versão atual prioriza uma representação simples, explicável e defensável. Ajustar limites de pertinência pode ser melhoria futura.
 
 ### O que prova que melhorou?
 
